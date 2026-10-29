@@ -102,12 +102,6 @@ enum AdvanceRuleMode {
   FULL
 }
 
-enum StaffRole {
-  OWNER
-  MANAGER
-  STAFF
-}
-
 // ───────────────────────────── Catalogue ─────────────────────────────
 
 model Category {
@@ -522,9 +516,8 @@ model User {
   email            String      @unique
   emailVerified    Boolean     @default(false)
   image            String?
-  staffRole        StaffRole   @default(STAFF)
-  // Better Auth admin + two-factor plugin fields.
-  role             String?     @default("user")
+  // Better Auth admin plugin: "owner" | "manager" | "staff" (see apps/api/src/auth/roles.ts).
+  role             String      @default("staff")
   banned           Boolean?    @default(false)
   banReason        String?
   banExpires       DateTime?
@@ -587,12 +580,26 @@ model Verification {
 }
 
 model TwoFactor {
-  id          String @id
-  secret      String
-  backupCodes String
-  userId      String
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                      String    @id
+  secret                  String
+  backupCodes             String
+  // Better Auth per-account TOTP lockout.
+  verified                Boolean?  @default(true)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("twoFactor")
+}
+
+/// Better Auth rate-limit counters (storage: "database"), shared by every API instance.
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
 }

@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: cultural_obsession
+      POSTGRES_DB: co_dev
       POSTGRES_USER: co
       POSTGRES_PASSWORD: co_local_dev
     ports:
