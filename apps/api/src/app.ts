@@ -5,12 +5,14 @@ import express from 'express';
 import helmet from 'helmet';
 import type { Auth } from './auth/auth';
 import { catalogRouter } from './catalog/routes';
+import type { Storage } from './storage/s3';
+import { uploadRouter } from './uploads/routes';
 import type { Env } from './env';
 import { errorHandler } from './http/errors';
 import { requireStaff, type StaffSession } from './http/require-staff';
 import { standardRetryAfter } from './http/retry-after';
 
-export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient }) {
+export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient; storage: Storage | null }) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
@@ -32,6 +34,7 @@ export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient }) 
   });
 
   app.use('/api/admin', catalogRouter(deps));
+  app.use('/api/admin', uploadRouter(deps));
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Not found' });

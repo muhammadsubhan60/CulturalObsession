@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { adminApi, ApiError, fieldMap } from '@/lib/admin-api';
+import { ImagesSection } from './images-section';
 import {
   type Category,
   type Product,
@@ -213,6 +214,8 @@ export function ProductEditor({ productId }: { productId: string | null }) {
               <Textarea id="p-seo-desc" rows={3} value={draft.seoDescription} onChange={(e) => set('seoDescription', e.target.value)} />
             </Field>
           </section>
+
+          {productId && product && <ImagesSection productId={product.id} images={product.images} onChanged={() => void load()} />}
 
           {productId && product && (
             <VariantsSection product={product} onEdit={(v) => setVariantDialog(v)} onAdd={() => setVariantDialog('new')} />

@@ -13,6 +13,7 @@ import type { Auth } from '../auth/auth';
 import { audit } from '../http/audit';
 import { handle, HttpError, notFound } from '../http/errors';
 import { requireStaff } from '../http/require-staff';
+import type { Storage } from '../storage/s3';
 
 const idParam = z.object({ id: z.string().min(1).max(64) });
 const variantPatch = variantFields.partial();
@@ -24,8 +25,12 @@ const productDetail = {
 } satisfies Prisma.ProductInclude;
 
 /** Catalogue management. Every staff role can read; only owners and managers can change it. */
-export function catalogRouter({ auth, prisma }: { auth: Auth; prisma: PrismaClient }) {
+export function catalogRouter({ auth, prisma, storage }: { auth: Auth; prisma: PrismaClient; storage: Storage | null }) {
   const r = Router();
+  const withUrls = <T extends { images: { s3Key: string }[] }>(p: T) => ({
+    ...p,
+    images: p.images.map((i) => ({ ...i, url: storage?.publicUrl(i.s3Key) ?? null })),
+  });
   const read = requireStaff(auth);
   const write = requireStaff(auth, ['owner', 'manager']);
 
@@ -119,7 +124,7 @@ export function catalogRouter({ auth, prisma }: { auth: Auth; prisma: PrismaClie
       ]);
       const items = products.map(({ variants, images, ...p }) => ({
         ...p,
-        image: images[0] ?? null,
+        image: images[0] ? { ...images[0], url: storage?.publicUrl(images[0].s3Key) ?? null } : null,
         variantCount: variants.length,
         minPricePaisa: variants.length ? Math.min(...variants.map((v) => v.pricePaisa)) : null,
         // null = made to order (no tracked variants)
@@ -144,7 +149,7 @@ export function catalogRouter({ auth, prisma }: { auth: Auth; prisma: PrismaClie
         await audit(tx, req, res, { action: 'product.create', entityType: 'Product', entityId: created.id });
         return created;
       });
-      res.status(201).json({ product });
+      res.status(201).json({ product: withUrls(product) });
     }),
   );
 
@@ -155,7 +160,7 @@ export function catalogRouter({ auth, prisma }: { auth: Auth; prisma: PrismaClie
       const { id } = idParam.parse(req.params);
       const product = await prisma.product.findUnique({ where: { id }, include: productDetail });
       if (!product) throw notFound('Product');
-      res.json({ product });
+      res.json({ product: withUrls(product) });
     }),
   );
 
@@ -179,7 +184,7 @@ export function catalogRouter({ auth, prisma }: { auth: Auth; prisma: PrismaClie
         });
         return updated;
       });
-      res.json({ product });
+      res.json({ product: withUrls(product) });
     }),
   );
 

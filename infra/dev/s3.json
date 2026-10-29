@@ -1,0 +1,26 @@
+{
+  "identities": [
+    {
+      "name": "co_local",
+      "credentials": [
+        {
+          "accessKey": "co_local",
+          "secretKey": "co_local_secret"
+        }
+      ],
+      "actions": [
+        "Admin",
+        "Read",
+        "Write",
+        "List",
+        "Tagging"
+      ]
+    },
+    {
+      "name": "anonymous",
+      "actions": [
+        "Read"
+      ]
+    }
+  ]
+}

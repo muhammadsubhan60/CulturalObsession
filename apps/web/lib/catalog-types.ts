@@ -30,6 +30,8 @@ export type Variant = {
   inventory: Inventory;
 };
 
+export type ProductImage = { id: string; s3Key: string; url: string | null; altText: string | null; sortOrder: number };
+
 export type Product = {
   id: string;
   title: string;
@@ -42,6 +44,7 @@ export type Product = {
   seoDescription: string | null;
   categories: { categoryId: string }[];
   variants: Variant[];
+  images: ProductImage[];
   updatedAt: string;
 };
 

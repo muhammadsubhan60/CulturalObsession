@@ -32,6 +32,12 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - name: Start S3-compatible storage (SeaweedFS)
+        run: |
+          docker run -d --name storage -p 8333:8333 \
+            -v "$PWD/infra/dev/s3.json:/etc/seaweedfs/s3.json:ro" \
+            chrislusf/seaweedfs:latest server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+          for i in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:8333/ && break; sleep 2; done
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @co/db generate
       - run: pnpm --filter @co/db migrate:deploy
