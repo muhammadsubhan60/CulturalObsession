@@ -9,7 +9,7 @@
   "scripts": {
     "build": "prisma generate && tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"no db tests yet\"",
+    "test": "vitest run",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy"
@@ -19,7 +19,9 @@
     "@prisma/client": "7.10.1"
   },
   "devDependencies": {
+    "dotenv": "^18.0.9",
     "prisma": "7.10.1",
-    "typescript": "~6.0.0"
+    "typescript": "~6.0.0",
+    "vitest": "^5.0.5"
   }
 }

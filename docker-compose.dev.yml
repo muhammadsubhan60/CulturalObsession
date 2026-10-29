@@ -1,0 +1,14 @@
+# Local development database only. Production PostgreSQL runs on Railway.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: cultural_obsession
+      POSTGRES_USER: co
+      POSTGRES_PASSWORD: co_local_dev
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - co_pg:/var/lib/postgresql/data
+volumes:
+  co_pg:

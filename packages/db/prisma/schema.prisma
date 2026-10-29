@@ -1,4 +1,6 @@
-// Full catalogue/order schema lands in Phase 1 (see docs/PLAN.md).
+// Cultural Obsession — core schema. Money is integer paisa everywhere.
+// Non-negative / positive CHECK constraints live in the SQL migrations (Prisma cannot express them).
+
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -6,4 +8,591 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ProductType {
+  READY_MADE
+  PERSONALIZABLE
+}
+
+enum OrderSource {
+  WEBSITE
+  WHATSAPP
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMATION_REQUIRED
+  CONFIRMED
+  IN_PRODUCTION
+  READY_TO_DISPATCH
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentMethod {
+  COD
+  BANK_TRANSFER
+  RAAST
+  JAZZCASH
+  EASYPAISA
+  SAFEPAY
+}
+
+enum PaymentPurpose {
+  ADVANCE
+  BALANCE
+  FULL
+  REFUND
+}
+
+enum PaymentStatus {
+  PENDING
+  AWAITING_VERIFICATION
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum ShipmentStatus {
+  CREATED
+  BOOKED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  DELIVERY_FAILED
+  RETURN_TO_SENDER
+  RETURNED
+  CANCELLED
+}
+
+enum InventoryReason {
+  OPENING_STOCK
+  ORDER_RESERVED
+  ORDER_RELEASED
+  ORDER_FULFILLED
+  RETURN_RESTOCKED
+  DAMAGED
+  MANUAL_ADJUSTMENT
+}
+
+enum AdvanceRuleScope {
+  GLOBAL
+  PRODUCT_TYPE
+  CATEGORY
+  PRODUCT
+}
+
+enum AdvanceRuleMode {
+  NONE
+  FIXED
+  PERCENT
+  FULL
+}
+
+enum StaffRole {
+  OWNER
+  MANAGER
+  STAFF
+}
+
+// ───────────────────────────── Catalogue ─────────────────────────────
+
+model Category {
+  id             String               @id @default(cuid())
+  name           String
+  slug           String               @unique
+  description    String?              @db.Text
+  imageKey       String?
+  parentId       String?
+  parent         Category?            @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children       Category[]           @relation("CategoryTree")
+  products       ProductCategory[]
+  advanceRules   AdvancePaymentRule[]
+  sortOrder      Int                  @default(0)
+  isActive       Boolean              @default(true)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  sortOrder  Int      @default(0)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId, sortOrder])
+}
+
+model Product {
+  id             String                  @id @default(cuid())
+  title          String
+  slug           String                  @unique
+  description    String                  @db.Text
+  vendor         String?
+  status         ProductStatus           @default(DRAFT)
+  productType    ProductType             @default(READY_MADE)
+  seoTitle       String?
+  seoDescription String?
+  categories     ProductCategory[]
+  variants       ProductVariant[]
+  images         ProductImage[]
+  templates      CustomizationTemplate[]
+  advanceRules   AdvancePaymentRule[]
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@index([status, productType])
+}
+
+model ProductVariant {
+  id                  String              @id @default(cuid())
+  productId           String
+  product             Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku                 String              @unique
+  title               String
+  optionValues        Json                @default("{}")
+  pricePaisa          Int
+  compareAtPricePaisa Int?
+  costPaisa           Int?
+  weightGrams         Int?
+  /// Made-to-order (personalized) variants skip stock reservation entirely.
+  trackInventory      Boolean             @default(true)
+  isActive            Boolean             @default(true)
+  sortOrder           Int                 @default(0)
+  inventory           Inventory?
+  movements           InventoryMovement[]
+  orderItems          OrderItem[]
+  images              ProductImage[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@index([productId, isActive])
+}
+
+model ProductImage {
+  id        String          @id @default(cuid())
+  productId String
+  variantId String?
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  s3Key     String
+  width     Int?
+  height    Int?
+  altText   String?
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+
+  @@index([productId, sortOrder])
+}
+
+model Inventory {
+  id                String         @id @default(cuid())
+  variantId         String         @unique
+  variant           ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantityOnHand    Int            @default(0)
+  quantityReserved  Int            @default(0)
+  lowStockThreshold Int            @default(3)
+  updatedAt         DateTime       @updatedAt
+}
+
+model InventoryMovement {
+  id            String          @id @default(cuid())
+  variantId     String
+  variant       ProductVariant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantityDelta Int
+  reason        InventoryReason
+  referenceType String?
+  referenceId   String?
+  note          String?
+  actorUserId   String?
+  createdAt     DateTime        @default(now())
+
+  @@index([variantId, createdAt])
+  @@index([referenceType, referenceId])
+}
+
+// ───────────────────────────── Personalization ─────────────────────────────
+
+model CustomizationTemplate {
+  id        String               @id @default(cuid())
+  productId String
+  product   Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  /// Preview layout: base image key, text box positions, fonts, colours.
+  config    Json                 @default("{}")
+  isActive  Boolean              @default(true)
+  fields    CustomizationField[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@index([productId, isActive])
+}
+
+model CustomizationField {
+  id              String                @id @default(cuid())
+  templateId      String
+  template        CustomizationTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  key             String
+  label           String
+  fieldType       String
+  required        Boolean               @default(false)
+  /// maxLength, allowed scripts, options, per-option prices (paisa), etc.
+  config          Json                  @default("{}")
+  extraPricePaisa Int                   @default(0)
+  sortOrder       Int                   @default(0)
+
+  @@unique([templateId, key])
+}
+
+// ───────────────────────────── Customers ─────────────────────────────
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  /// E.164 (+923XXXXXXXXX); the identity for guest checkout and WhatsApp orders.
+  phone     String    @unique
+  email     String?
+  addresses Address[]
+  orders    Order[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model Address {
+  id            String   @id @default(cuid())
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  recipientName String
+  phone         String
+  city          String
+  area          String?
+  addressLine   String
+  postalCode    String?
+  createdAt     DateTime @default(now())
+
+  @@index([customerId])
+}
+
+// ───────────────────────────── Orders ─────────────────────────────
+
+model Order {
+  id                   String               @id @default(cuid())
+  orderNumber          String               @unique
+  /// Client-generated per checkout attempt; a retry with the same key returns the same order.
+  idempotencyKey       String?              @unique
+  customerId           String
+  customer             Customer             @relation(fields: [customerId], references: [id])
+  source               OrderSource
+  status               OrderStatus          @default(PENDING)
+  paymentMethod        PaymentMethod        @default(COD)
+  currency             String               @default("PKR")
+  subtotalPaisa        Int
+  discountPaisa        Int                  @default(0)
+  shippingPaisa        Int                  @default(0)
+  totalPaisa           Int
+  advanceRequiredPaisa Int                  @default(0)
+  /// The AdvancePaymentRule that applied when the order was placed (rules may change later).
+  advanceRuleSnapshot  Json?
+  codAmountPaisa       Int                  @default(0)
+  recipientName        String
+  recipientPhone       String
+  shippingAddress      Json
+  customerNote         String?
+  internalNote         String?
+  utmSource            String?
+  utmMedium            String?
+  utmCampaign          String?
+  utmContent           String?
+  utmTerm              String?
+  landingPage          String?
+  confirmedAt          DateTime?
+  cancelledAt          DateTime?
+  items                OrderItem[]
+  payments             Payment[]
+  shipments            Shipment[]
+  statusHistory        OrderStatusHistory[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId, createdAt])
+  @@index([source, createdAt])
+}
+
+model OrderItem {
+  id                   String               @id @default(cuid())
+  orderId              String
+  order                Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId            String?
+  variant              ProductVariant?      @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  productTitleSnapshot String
+  variantTitleSnapshot String?
+  skuSnapshot          String?
+  productTypeSnapshot  ProductType
+  unitPricePaisa       Int
+  customizationPaisa   Int                  @default(0)
+  quantity             Int
+  lineTotalPaisa       Int
+  inventoryReserved    Boolean              @default(false)
+  customization        OrderCustomization[]
+  createdAt            DateTime             @default(now())
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+model OrderCustomization {
+  id              String    @id @default(cuid())
+  orderItemId     String
+  orderItem       OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  fieldKey        String
+  labelSnapshot   String
+  value           Json
+  extraPricePaisa Int       @default(0)
+  artworkS3Key    String?
+  previewS3Key    String?
+  approvedAt      DateTime?
+  approvedById    String?
+  createdAt       DateTime  @default(now())
+
+  @@index([orderItemId])
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  orderId           String
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method            PaymentMethod
+  purpose           PaymentPurpose  @default(FULL)
+  status            PaymentStatus   @default(PENDING)
+  amountPaisa       Int
+  paymentAccountId  String?
+  paymentAccount    PaymentAccount? @relation(fields: [paymentAccountId], references: [id], onDelete: SetNull)
+  /// Customer-entered transaction ID / gateway reference.
+  providerReference String?
+  proofS3Key        String?
+  verifiedAt        DateTime?
+  verifiedById      String?
+  paidAt            DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // NULL references are distinct in PostgreSQL, so pending payments without one never collide.
+  @@unique([method, providerReference])
+  @@index([orderId, status])
+  @@index([status, createdAt])
+}
+
+model Courier {
+  id                  String     @id @default(cuid())
+  name                String
+  code                String     @unique
+  isActive            Boolean    @default(true)
+  /// Non-secret settings only (service type, pickup city). API keys stay in env vars.
+  config              Json       @default("{}")
+  trackingUrlTemplate String?
+  shipments           Shipment[]
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+}
+
+model Shipment {
+  id                String         @id @default(cuid())
+  orderId           String
+  order             Order          @relation(fields: [orderId], references: [id])
+  courierId         String
+  courier           Courier        @relation(fields: [courierId], references: [id])
+  trackingNumber    String?
+  status            ShipmentStatus @default(CREATED)
+  codAmountPaisa    Int            @default(0)
+  shippingCostPaisa Int?
+  trackingUrl       String?
+  bookedAt          DateTime?
+  deliveredAt       DateTime?
+  returnedAt        DateTime?
+  metadata          Json           @default("{}")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([courierId, trackingNumber])
+  @@index([orderId, createdAt])
+  @@index([status, updatedAt])
+}
+
+model OrderStatusHistory {
+  id          String       @id @default(cuid())
+  orderId     String
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  note        String?
+  actorUserId String?
+  createdAt   DateTime     @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// ───────────────────────────── Settings ─────────────────────────────
+
+/// Admin-configured advance payment. The most specific active rule wins:
+/// PRODUCT > CATEGORY > PRODUCT_TYPE > GLOBAL, then higher priority.
+model AdvancePaymentRule {
+  id            String           @id @default(cuid())
+  name          String
+  scope         AdvanceRuleScope
+  mode          AdvanceRuleMode
+  /// FIXED: amount in paisa. PERCENT: basis points (5000 = 50%). Ignored for NONE / FULL.
+  value         Int              @default(0)
+  productType   ProductType?
+  categoryId    String?
+  category      Category?        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product?         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  /// Rule applies only when the order total is at least this much.
+  minOrderPaisa Int              @default(0)
+  priority      Int              @default(0)
+  isActive      Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([isActive, scope])
+}
+
+/// Where customers send advance / prepaid money. Shown at checkout; editable in admin.
+model PaymentAccount {
+  id            String        @id @default(cuid())
+  method        PaymentMethod
+  label         String
+  accountTitle  String
+  accountNumber String?
+  iban          String?
+  bankName      String?
+  instructions  String?       @db.Text
+  isActive      Boolean       @default(true)
+  sortOrder     Int           @default(0)
+  payments      Payment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model StoreSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json     @default("{}")
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorUserId, createdAt])
+}
+
+// ───────────────────────────── Admin auth (Better Auth) ─────────────────────────────
+
+model User {
+  id               String      @id
+  name             String
+  email            String      @unique
+  emailVerified    Boolean     @default(false)
+  image            String?
+  staffRole        StaffRole   @default(STAFF)
+  // Better Auth admin + two-factor plugin fields.
+  role             String?     @default("user")
+  banned           Boolean?    @default(false)
+  banReason        String?
+  banExpires       DateTime?
+  twoFactorEnabled Boolean?    @default(false)
+  sessions         Session[]
+  accounts         Account[]
+  twoFactors       TwoFactor[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@map("user")
+}
+
+model Session {
+  id             String   @id
+  expiresAt      DateTime
+  token          String   @unique
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("twoFactor")
 }

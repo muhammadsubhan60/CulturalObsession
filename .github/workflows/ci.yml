@@ -8,6 +8,23 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: cultural_obsession
+          POSTGRES_USER: co
+          POSTGRES_PASSWORD: co_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U co"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://co:co_ci@localhost:5432/cultural_obsession?schema=public
+      BETTER_AUTH_SECRET: ci-only-secret-not-used-anywhere-else-000000
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -17,6 +34,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @co/db generate
+      - run: pnpm --filter @co/db migrate:deploy
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
