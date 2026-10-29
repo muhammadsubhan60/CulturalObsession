@@ -12,7 +12,7 @@ export function createApp(env: Env, deps: { auth: Auth }) {
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
   app.use(helmet());
-  app.use(cors({ origin: [env.WEB_ORIGIN], credentials: true }));
+  app.use(cors({ origin: [env.WEB_ORIGIN], credentials: true, exposedHeaders: ['Retry-After'] }));
 
   // Better Auth reads the raw body itself, so it is mounted before express.json().
   app.all('/api/auth/{*splat}', standardRetryAfter, toNodeHandler(deps.auth));

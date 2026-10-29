@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+/* Brand tokens taken from the locked storefront theme (maroon text #3D081B, cream #F2EFDD). */
+:root {
+  --background: #fbfaf5;
+  --foreground: #2b1b21;
+  --card: #ffffff;
+  --card-foreground: #2b1b21;
+  --muted: #f2efdd;
+  --muted-foreground: #6b5a60;
+  --border: #e6e0cc;
+  --input: #d9d2bb;
+  --primary: #3d081b;
+  --primary-foreground: #f2efdd;
+  --accent: #f2efdd;
+  --accent-foreground: #3d081b;
+  --ring: #8e1240;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --success: #1f7a4d;
+  --warning: #a15c07;
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --radius-md: var(--radius);
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-asul), ui-serif, Georgia, serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Sidebar nav scrollbar: hidden until hovered (from the 21st.dev sidebar). */
+.sidebar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.sidebar-nav:hover {
+  scrollbar-color: color-mix(in srgb, var(--foreground) 18%, transparent) transparent;
+}

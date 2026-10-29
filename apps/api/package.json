@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsup src/index.ts --format esm --target node22 --clean",
     "start": "node dist/index.js",
-    "seed:admin": "tsx src/scripts/seed-admin.ts",
+    "seed:admin": "tsx --env-file-if-exists=.env src/scripts/seed-admin.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
