@@ -1,13 +1,16 @@
 import { toNodeHandler } from 'better-auth/node';
 import cors from 'cors';
-import express, { type ErrorRequestHandler } from 'express';
+import type { PrismaClient } from '@co/db';
+import express from 'express';
 import helmet from 'helmet';
 import type { Auth } from './auth/auth';
+import { catalogRouter } from './catalog/routes';
 import type { Env } from './env';
+import { errorHandler } from './http/errors';
 import { requireStaff, type StaffSession } from './http/require-staff';
 import { standardRetryAfter } from './http/retry-after';
 
-export function createApp(env: Env, deps: { auth: Auth }) {
+export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient }) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
@@ -28,15 +31,13 @@ export function createApp(env: Env, deps: { auth: Auth }) {
     res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   });
 
+  app.use('/api/admin', catalogRouter(deps));
+
   app.use((_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
 
-  const onError: ErrorRequestHandler = (err, req, res, _next) => {
-    console.error(JSON.stringify({ level: 'error', path: req.path, message: err instanceof Error ? err.message : String(err) }));
-    res.status(500).json({ error: 'Something went wrong' });
-  };
-  app.use(onError);
+  app.use(errorHandler);
 
   return app;
 }

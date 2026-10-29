@@ -15,5 +15,5 @@ export function makeTestApp() {
   });
   const prisma = getPrisma();
   const auth = createAuth(env, prisma);
-  return { app: createApp(env, { auth }), auth, prisma, env };
+  return { app: createApp(env, { auth, prisma }), auth, prisma, env };
 }
