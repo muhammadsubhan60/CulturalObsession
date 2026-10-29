@@ -1,0 +1,9 @@
+// Full catalogue/order schema lands in Phase 1 (see docs/PLAN.md).
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}

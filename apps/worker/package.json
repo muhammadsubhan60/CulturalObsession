@@ -1,0 +1,21 @@
+{
+  "name": "@co/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --target node22 --clean",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no worker tests yet\""
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsup": "^9.0.0",
+    "typescript": "~6.0.0"
+  },
+  "dependencies": {
+    "@co/db": "workspace:*",
+    "@co/shared": "workspace:*"
+  }
+}

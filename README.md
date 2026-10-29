@@ -1,45 +1,34 @@
-# Customized Jewellers public-site mirror
+# Cultural Obsession
 
-Captured from `https://customizedjewellers.pk/` on 2026-10-30.
+Our own ecommerce platform replacing the customizedjewellers.pk Shopify store.
+The storefront keeps the current theme exactly; see [docs/PLAN.md](docs/PLAN.md).
 
-## Open locally
+| Path | What | Deploys to |
+|---|---|---|
+| `apps/web` | Next.js storefront + `/admin` | Vercel (`sin1`) |
+| `apps/api` | Express API | Railway (`asia-southeast`) |
+| `apps/worker` | Cron jobs | Railway cron |
+| `packages/db` | Prisma schema + client | — |
+| `packages/shared` | Money, phone, shared Zod schemas | — |
 
-From this folder, run:
+## Develop
 
 ```bash
-python3 -m http.server 8080 --directory site
+pnpm install
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env.local
+pnpm --filter @co/db generate
+pnpm --filter @co/api dev     # http://localhost:4000/health
+pnpm --filter @co/web dev     # http://localhost:3000
 ```
 
-Then open `http://127.0.0.1:8080/` in a browser.
+Checks: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 
-## Included
+## Deploy
 
-- 168 public HTML pages
-  - 147 product pages
-  - 11 collection pages
-  - 8 information pages
-  - 1 blog page
-  - Homepage
-- 647 locally stored image, CSS, JavaScript, font, and supporting asset files
-- Original sitemap and child sitemaps
-- Browser-rendered source captures in `raw-pages/`
-- Crawl and integrity reports
-- Reusable capture/build/verification scripts
+- **Railway:** one project with PostgreSQL, an `api` service (config `apps/api/railway.json`)
+  and a `worker` cron service (`apps/worker/railway.json`). Root directory stays the repo root.
+- **Vercel:** project root `apps/web` (config `apps/web/vercel.json`).
+- Web on the apex domain, API on `api.` subdomain — required for same-site admin cookies.
 
-## Main files
-
-- `site/index.html` — local homepage
-- `manifest.json` — URL-to-local-file inventory
-- `mirror-report.json` — download totals and failures
-- `mirror-verification.json` — local-link and workbook cross-check
-- `rendered-pages.json` — browser capture report
-- `customizedjewellers-pk-2026-10-29.xlsx` — supplied product data sample
-
-## Notes
-
-- The mirror covers public storefront pages and assets. Private Shopify areas such as admin, customer accounts, orders, cart state, and checkout were not copied.
-- Product forms, account actions, cart/checkout, analytics, and other server-backed features still require the live Shopify site.
-- Responsive image duplicates were collapsed to their original-quality local source files.
-- The supplied workbook contains 12 product rows. All 12 product pages and all 26 unique images listed there were found in the local mirror.
-- The live theme references one obsolete `ellipsis.xml` file that returns HTTP 404 upstream. This is an unused legacy Mozilla CSS binding and does not affect the verified page renders.
-# CulturalObsession
+The locked theme comes from the public-site mirror described in [docs/MIRROR.md](docs/MIRROR.md).

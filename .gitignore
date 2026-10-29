@@ -1,0 +1,16 @@
+node_modules/
+.next/
+dist/
+coverage/
+.turbo/
+.vercel/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+**/src/generated/
+*.tsbuildinfo
+
+# Third-party API docs kept locally, not committed
+*.pdf

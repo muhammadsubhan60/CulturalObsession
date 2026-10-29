@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
+overrides:
+  # Transitive via prisma → @prisma/studio-core; patched for GHSA-xxjr-mmjv-4gpg and related.
+  lodash: '>=4.18.0'
