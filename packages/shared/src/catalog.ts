@@ -105,3 +105,14 @@ export const productListQuery = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
 });
 export type ProductListQuery = z.infer<typeof productListQuery>;
+
+/** Suggests a slug from a title; staff can still edit it. */
+export function slugify(input: string): string {
+  return input
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120);
+}

@@ -26,3 +26,13 @@ describe('money', () => {
     expect(() => percentOf(100, 10_001)).toThrow(RangeError);
   });
 });
+
+import { slugify } from '../catalog';
+
+describe('slugify', () => {
+  it('matches Shopify-style handles', () => {
+    expect(slugify('Customize Name Cufflinks')).toBe('customize-name-cufflinks');
+    expect(slugify('  24K Stud — Cufflinks!! ')).toBe('24k-stud-cufflinks');
+    expect(slugify('Café Ring')).toBe('cafe-ring');
+  });
+});

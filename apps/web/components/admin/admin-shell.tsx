@@ -29,7 +29,11 @@ function BrandMark() {
         CJ
       </span>
       {!collapsed && (
-        <span className="truncate font-serif text-[15px] font-bold leading-tight text-primary">Customized Jewellers</span>
+        <span className="font-serif text-[14px] font-bold leading-[1.15] text-primary">
+          Customized
+          <br />
+          Jewellers
+        </span>
       )}
     </div>
   );
