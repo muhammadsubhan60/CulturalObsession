@@ -14,6 +14,8 @@ export interface Storage {
   /** Presigned PUT that only accepts exactly this content type and length. */
   presignPut(key: string, contentType: string, size: number): Promise<{ url: string; headers: Record<string, string> }>;
   head(key: string): Promise<StoredObject | null>;
+  /** Server-side upload (imports, generated previews). */
+  put(key: string, body: Uint8Array, contentType: string): Promise<void>;
   readStart(key: string, bytes: number): Promise<Uint8Array>;
   delete(key: string): Promise<void>;
   publicUrl(key: string): string;
@@ -52,6 +54,9 @@ export function createS3Storage(env: Env): Storage | null {
         if ((err as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode === 404) return null;
         throw err;
       }
+    },
+    async put(key, body, contentType) {
+      await client.send(new PutObjectCommand({ Bucket, Key: key, Body: body, ContentType: contentType, ContentLength: body.length }));
     },
     async readStart(key, bytes) {
       const res = await client.send(new GetObjectCommand({ Bucket, Key: key, Range: `bytes=0-${bytes - 1}` }));

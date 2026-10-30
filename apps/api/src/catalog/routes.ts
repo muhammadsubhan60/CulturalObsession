@@ -11,6 +11,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import type { Auth } from '../auth/auth';
 import { audit } from '../http/audit';
+import { sanitizeRichText } from './rich-text';
 import { handle, HttpError, notFound } from '../http/errors';
 import { requireStaff } from '../http/require-staff';
 import type { Storage } from '../storage/s3';
@@ -52,6 +53,7 @@ export function catalogRouter({ auth, prisma, storage }: { auth: Auth; prisma: P
     write,
     handle(async (req, res) => {
       const data = categoryInput.parse(req.body);
+      if (data.description) data.description = sanitizeRichText(data.description);
       const category = await prisma.$transaction(async (tx) => {
         const created = await tx.category.create({ data });
         await audit(tx, req, res, { action: 'category.create', entityType: 'Category', entityId: created.id });
@@ -67,6 +69,7 @@ export function catalogRouter({ auth, prisma, storage }: { auth: Auth; prisma: P
     handle(async (req, res) => {
       const { id } = idParam.parse(req.params);
       const data = categoryInput.partial().parse(req.body);
+      if (data.description) data.description = sanitizeRichText(data.description);
       if (data.parentId === id) throw new HttpError(400, 'A collection cannot be its own parent');
       const category = await prisma.$transaction(async (tx) => {
         const updated = await tx.category.update({ where: { id }, data });
@@ -141,6 +144,7 @@ export function catalogRouter({ auth, prisma, storage }: { auth: Auth; prisma: P
     write,
     handle(async (req, res) => {
       const { categoryIds, ...data } = productInput.parse(req.body);
+      data.description = sanitizeRichText(data.description);
       const product = await prisma.$transaction(async (tx) => {
         const created = await tx.product.create({
           data: { ...data, categories: { create: categoryIds.map((categoryId) => ({ categoryId })) } },
@@ -170,6 +174,7 @@ export function catalogRouter({ auth, prisma, storage }: { auth: Auth; prisma: P
     handle(async (req, res) => {
       const { id } = idParam.parse(req.params);
       const { categoryIds, ...data } = productInput.partial().parse(req.body);
+      if (data.description !== undefined) data.description = sanitizeRichText(data.description);
       const product = await prisma.$transaction(async (tx) => {
         if (categoryIds) {
           await tx.productCategory.deleteMany({ where: { productId: id } });
