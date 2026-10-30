@@ -1,0 +1,26 @@
+/* Checkout, order status and order tracking: layout only — every control uses the theme's own classes. */
+.co-checkout { display: grid; gap: 4rem; }
+@media screen and (min-width: 990px) { .co-checkout { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; } }
+.co-checkout__section { margin-bottom: 3.2rem; }
+.co-checkout__section > h2 { margin: 0 0 1.6rem; }
+.co-checkout__row { display: grid; gap: 1.6rem; margin-bottom: 1.6rem; }
+@media screen and (min-width: 750px) { .co-checkout__row--2 { grid-template-columns: 1fr 1fr; } }
+.co-checkout .field { margin: 0; }
+.co-checkout__error { display: flex; gap: .6rem; align-items: center; margin-top: .6rem; color: rgb(var(--color-foreground)); }
+.co-checkout__error .icon { width: 1.3rem; height: 1.3rem; flex-shrink: 0; }
+.co-summary { border: .1rem solid rgba(var(--color-foreground), .15); border-radius: var(--inputs-radius, 1rem); padding: 2.4rem; position: sticky; top: 2rem; }
+.co-summary__line { display: grid; grid-template-columns: 6.4rem 1fr auto; gap: 1.2rem; align-items: start; padding: 1.2rem 0; border-bottom: .1rem solid rgba(var(--color-foreground), .08); }
+.co-summary__line img { width: 6.4rem; height: 6.4rem; object-fit: cover; border-radius: .6rem; }
+.co-summary__meta { font-size: 1.3rem; color: rgba(var(--color-foreground), .75); margin: .2rem 0 0; }
+.co-summary__totals { margin: 1.6rem 0 0; }
+.co-summary__totals div { display: flex; justify-content: space-between; padding: .4rem 0; }
+.co-summary__totals .co-summary__grand { font-size: 1.8rem; font-weight: 700; border-top: .1rem solid rgba(var(--color-foreground), .15); margin-top: .8rem; padding-top: 1.2rem; }
+.co-pay-option { display: block; border: .1rem solid rgba(var(--color-foreground), .25); border-radius: var(--inputs-radius, 1rem); padding: 1.4rem 1.6rem; margin-bottom: 1rem; cursor: pointer; }
+.co-pay-option:has(input:checked) { border-color: rgb(var(--color-foreground)); box-shadow: 0 0 0 .1rem rgb(var(--color-foreground)); }
+.co-pay-option input { margin-right: .8rem; accent-color: rgb(var(--color-foreground)); }
+.co-pay-option__details { margin: .8rem 0 0 2.4rem; font-size: 1.4rem; line-height: 1.6; }
+.co-notice { padding: 1.6rem; border-radius: var(--inputs-radius, 1rem); background: rgba(var(--color-foreground), .04); margin-bottom: 2rem; }
+.co-status { list-style: none; padding: 0; margin: 0; }
+.co-status li { padding: .4rem 0; }
+.co-order-meta { display: grid; gap: 2.4rem; }
+@media screen and (min-width: 750px) { .co-order-meta { grid-template-columns: 1fr 1fr; } }

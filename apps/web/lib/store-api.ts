@@ -38,3 +38,11 @@ export async function storePost(path: string, body: unknown, shopperIp: string |
   });
   return { status: res.status };
 }
+
+/** Uncached GET, for per-customer data such as an order's status. */
+export async function storeGetFresh<T>(path: string): Promise<T | null> {
+  const res = await fetch(`${BASE}/api/store${path}`, { cache: 'no-store' });
+  if (res.status === 404 || res.status === 400) return null;
+  if (!res.ok) throw new Error(`Store API ${path} failed (${res.status})`);
+  return (await res.json()) as T;
+}

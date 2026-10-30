@@ -16,6 +16,8 @@ const SCRIPTS = [
   '/storefront/facets.js',
   '/storefront/forms.js',
   '/storefront/whatsapp.js',
+  '/storefront/cart-bubble.js',
+  '/storefront/utm.js',
 ];
 
 /**
