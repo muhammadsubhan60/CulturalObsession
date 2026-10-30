@@ -13,6 +13,7 @@ export function makeTestApp() {
     WEB_ORIGIN,
     DATABASE_URL: process.env.DATABASE_URL,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? 'test-secret-test-secret-test-secret-1234',
+    INTERNAL_API_TOKEN: 'internal-test-token-internal-test-token-0000',
     // Local SeaweedFS from docker-compose.dev.yml (CI starts the same container).
     S3_BUCKET: process.env.S3_BUCKET ?? 'co-test-media',
     S3_REGION: 'us-east-1',

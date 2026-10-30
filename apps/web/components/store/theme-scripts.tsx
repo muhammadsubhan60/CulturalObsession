@@ -14,6 +14,7 @@ const SCRIPTS = [
   `${THEME_JS}/share.js`,
   `${THEME_JS}/show-more.js`,
   '/storefront/facets.js',
+  '/storefront/forms.js',
 ];
 
 /**

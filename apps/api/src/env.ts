@@ -11,6 +11,8 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   /** Parent domain shared by web and api so admin cookies reach both (e.g. culturalobsession.deltalabs.tech). */
   COOKIE_DOMAIN: z.string().min(1).optional(),
+  /** Shared secret the web app sends so the API may trust its X-Shopper-IP header. */
+  INTERNAL_API_TOKEN: z.string().min(32).optional(),
   // ─── Media storage (S3, Cloudflare R2, or SeaweedFS locally). Uploads return 503 when unset. ───
   S3_BUCKET: z.string().min(1).optional(),
   S3_REGION: z.string().min(1).default('auto'),

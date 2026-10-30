@@ -171,6 +171,8 @@ def derived_stylesheets(sheets: dict[str, list[str]]) -> None:
         sheets["page"], "component-cart-items.css",
         [T2 + "component-cart.css", T2 + "component-totals.css", T2 + "component-price.css", T2 + "component-discounts.css"],
     )
+    sheets["contact"] = with_after(sheets["page"], "section-main-page.css", [T2 + "section-contact-form.css"])
+    public_url("customizedjewellers.pk/cdn/shop/t/2/assets/section-contact-form.css")
     sheets["search"] = with_after(sheets["collection"], "template-collection.css", [T2 + "component-search.css"])
 
 
@@ -195,6 +197,16 @@ def main() -> None:
             target = OUT_SECTIONS / page / f"{i:02d}-{name}.html"
             page_dir = str(Path(path).parent) if "/" in path else ""
             target.write_text(rewrite_urls(strip_noise(html), page_dir).strip() + "\n", encoding="utf-8")
+
+    # Every info page's own content section (the "page" template above only covers about-us).
+    pages_dir = OUT_SECTIONS / "pages"
+    pages_dir.mkdir()
+    for path in sorted((MIRROR / "pages").glob("*.html")):
+        doc = path.read_text(encoding="utf-8")
+        for name, html in sections_of(doc):
+            if name in ("main", "contact-form"):
+                suffix = "" if name == "main" else "--contact-form"
+                (pages_dir / f"{path.stem}{suffix}.html").write_text(rewrite_urls(strip_noise(html), "pages").strip() + "\n", encoding="utf-8")
 
     derived_stylesheets(sheets)
     (OUT_PUBLIC).mkdir(parents=True, exist_ok=True)

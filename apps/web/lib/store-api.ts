@@ -20,3 +20,21 @@ export async function storeGet<T>(path: string): Promise<T | null> {
   if (!res.ok) throw new Error(`Store API ${path} failed (${res.status})`);
   return (await res.json()) as T;
 }
+
+/**
+ * POST to the storefront API on behalf of a shopper. The internal token lets the API trust the
+ * forwarded shopper IP for its rate limits; without it the API uses this server's address.
+ */
+export async function storePost(path: string, body: unknown, shopperIp: string | null): Promise<{ status: number }> {
+  const token = process.env.STORE_INTERNAL_TOKEN;
+  const res = await fetch(`${BASE}/api/store${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && shopperIp ? { 'X-Internal-Token': token, 'X-Shopper-IP': shopperIp } : {}),
+    },
+    body: JSON.stringify(body),
+    cache: 'no-store',
+  });
+  return { status: res.status };
+}

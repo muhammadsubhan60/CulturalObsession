@@ -10,6 +10,9 @@ export type Replacer = (el: Element, render: (nodes: DOMNode[]) => ReactNode) =>
  * dangerouslySetInnerHTML — letting callers replace the data-driven nodes.
  */
 export function renderTheme(html: string, replace?: Replacer): ReactNode {
+  // Forms that posted to Shopify's /contact#<id> now post to ours; the hash never reaches the
+  // server, so carry the form id along to show its success message in the right form.
+  html = html.replace(/(<form method="post" action="\/contact#([A-Za-z0-9_-]+)"[^>]*>)/g, '$1<input type="hidden" name="form_id" value="$2">');
   const options: HTMLReactParserOptions = {
     replace(node) {
       if (!(node instanceof Element) || !replace) return undefined;

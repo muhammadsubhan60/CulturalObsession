@@ -605,3 +605,24 @@ model RateLimit {
 
   @@map("rateLimit")
 }
+
+enum SubmissionKind {
+  CONTACT
+  NEWSLETTER
+}
+
+/// Storefront contact-form messages and newsletter sign-ups.
+model ContactSubmission {
+  id        String         @id @default(cuid())
+  kind      SubmissionKind
+  name      String?
+  email     String
+  phone     String?
+  message   String?        @db.Text
+  ipAddress String?
+  handledAt DateTime?
+  createdAt DateTime       @default(now())
+
+  @@index([kind, createdAt])
+  @@index([email])
+}
