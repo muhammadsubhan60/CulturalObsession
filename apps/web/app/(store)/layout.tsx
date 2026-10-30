@@ -20,6 +20,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
         <link rel="preload" as="font" type="font/woff2" crossOrigin="anonymous" href="/theme/customizedjewellers.pk/cdn/fonts/archivo/archivo_n4.dc8d917cc69af0a65ae04d01fd8eeab28a3573c9.woff2" />
         <link rel="preload" as="font" type="font/woff2" crossOrigin="anonymous" href="/theme/customizedjewellers.pk/cdn/fonts/asul/asul_n4.814c5323104eaec8052c156ea81d27e4cc2ecc89.woff2" />
         <link rel="stylesheet" href="/theme/head.css" />
+        <link rel="stylesheet" href="/storefront/fonts.css" />
       </head>
       <body className="gradient">
         <a className="skip-to-content-link button visually-hidden" href="#MainContent">

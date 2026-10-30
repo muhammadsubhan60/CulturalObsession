@@ -1,0 +1,29 @@
+/* Self-hosted Google Fonts used by the Globo options and WhatsApp widget styles (latin subset). */
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/storefront/fonts/Mulish-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Mulish';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/storefront/fonts/Mulish-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/storefront/fonts/OpenSans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/storefront/fonts/OpenSans-600.woff2') format('woff2');
+}

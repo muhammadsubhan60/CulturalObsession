@@ -38,6 +38,8 @@ def source_of(rel: str) -> Path | None:
 PAGES = {
     "home": "index.html",
     "product": "products/customize-name-cufflinks.html",
+    # Same template with several images and options: source of the thumbnail slider and variant picker.
+    "product_options": "products/all-jewellery-customize.html",
     "collection": "collections/necklace.html",
     "page": "pages/about-us.html",
     "blog": "blogs/news.html",
@@ -147,6 +149,31 @@ def stylesheets(doc: str) -> list[str]:
     return hrefs
 
 
+T2 = "/theme/customizedjewellers.pk/cdn/shop/t/2/assets/"
+
+
+def derived_stylesheets(sheets: dict[str, list[str]]) -> None:
+    """Templates the mirror never captured, built from Dawn's own section stylesheets.
+    Their CSS comes from the live theme CDN (byte-identical to the mirrored files) via extra-assets."""
+    def with_after(base: list[str], after: str, extra: list[str]) -> list[str]:
+        out = [u for u in base if u not in extra]
+        i = out.index(T2 + after) + 1 if T2 + after in out else len(out)
+        return out[:i] + extra + out[i:]
+
+    for name in ("component-cart.css", "component-totals.css", "component-discounts.css", "section-product-recommendations.css"):
+        public_url("customizedjewellers.pk/cdn/shop/t/2/assets/" + name)
+    sheets["product"] = with_after(sheets["product"], "component-price.css", [T2 + "section-product-recommendations.css"])
+    # Globo's base CSS was injected into <head> by its script; it now ships as a file right after base.css.
+    public_url("globo-options.css")
+    for name in ("product", "product_options"):
+        sheets[name].insert(1, "/theme/globo-options.css")
+    sheets["cart"] = with_after(
+        sheets["page"], "component-cart-items.css",
+        [T2 + "component-cart.css", T2 + "component-totals.css", T2 + "component-price.css", T2 + "component-discounts.css"],
+    )
+    sheets["search"] = with_after(sheets["collection"], "template-collection.css", [T2 + "component-search.css"])
+
+
 def main() -> None:
     if OUT_SECTIONS.exists():
         shutil.rmtree(OUT_SECTIONS)
@@ -169,10 +196,12 @@ def main() -> None:
             page_dir = str(Path(path).parent) if "/" in path else ""
             target.write_text(rewrite_urls(strip_noise(html), page_dir).strip() + "\n", encoding="utf-8")
 
+    derived_stylesheets(sheets)
     (OUT_PUBLIC).mkdir(parents=True, exist_ok=True)
     (OUT_PUBLIC / "head.css").write_text(head_css or "", encoding="utf-8")
     for name in KEEP_JS:
         public_url(THEME_JS + name)
+    (WEB / "theme").mkdir(parents=True, exist_ok=True)
     (WEB / "theme/stylesheets.json").write_text(json.dumps(sheets, indent=2) + "\n", encoding="utf-8")
 
     # Copy referenced assets, plus fonts/images referenced from copied CSS.

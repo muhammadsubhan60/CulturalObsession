@@ -2,7 +2,7 @@ import 'server-only';
 import parse, { domToReact, Element, type DOMNode, type HTMLReactParserOptions } from 'html-react-parser';
 import type { ReactNode } from 'react';
 
-/** Return a node to swap in, or undefined to keep the theme markup as-is. */
+/** Return a node to swap in, null to remove the element, or undefined to keep the theme markup as-is. */
 export type Replacer = (el: Element, render: (nodes: DOMNode[]) => ReactNode) => ReactNode | undefined;
 
 /**
@@ -14,7 +14,9 @@ export function renderTheme(html: string, replace?: Replacer): ReactNode {
     replace(node) {
       if (!(node instanceof Element) || !replace) return undefined;
       const out = replace(node, (nodes) => domToReact(nodes, options));
-      return out === undefined ? undefined : (out as ReturnType<NonNullable<HTMLReactParserOptions['replace']>>);
+      if (out === undefined) return undefined;
+      // html-react-parser treats null as "no replacement" and keeps the element; an empty fragment removes it.
+      return (out === null ? <></> : out) as ReturnType<NonNullable<HTMLReactParserOptions['replace']>>;
     },
   };
   return parse(html, options);
