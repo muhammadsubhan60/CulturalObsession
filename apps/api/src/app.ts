@@ -5,6 +5,7 @@ import express from 'express';
 import helmet from 'helmet';
 import type { Auth } from './auth/auth';
 import { catalogRouter } from './catalog/routes';
+import { checkoutRouter } from './checkout/routes';
 import type { Storage } from './storage/s3';
 import { storeFormsRouter } from './store/forms';
 import { storeRouter } from './store/routes';
@@ -37,6 +38,7 @@ export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient; st
 
   app.use('/api/store', storeRouter(deps));
   app.use('/api/store', storeFormsRouter({ prisma: deps.prisma, internalToken: env.INTERNAL_API_TOKEN }));
+  app.use('/api/store', checkoutRouter({ prisma: deps.prisma, storage: deps.storage, internalToken: env.INTERNAL_API_TOKEN }));
   app.use('/api/admin', catalogRouter(deps));
   app.use('/api/admin', uploadRouter(deps));
 

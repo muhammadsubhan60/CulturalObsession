@@ -295,6 +295,8 @@ model Order {
   orderNumber          String               @unique
   /// Client-generated per checkout attempt; a retry with the same key returns the same order.
   idempotencyKey       String?              @unique
+  /// Secret in the customer's order-status link (/orders/<number>?key=...), like Shopify's.
+  accessKey            String               @unique @default(cuid())
   customerId           String
   customer             Customer             @relation(fields: [customerId], references: [id])
   source               OrderSource
