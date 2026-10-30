@@ -111,3 +111,28 @@ describe('collection filters', () => {
     expect(junk.body.products).toHaveLength(3);
   });
 });
+
+describe('sitemap', () => {
+  it('lists active products and collections only', async () => {
+    const res = await request(app).get('/api/store/sitemap');
+    const slugs = res.body.products.map((p: { slug: string }) => p.slug);
+    expect(slugs).toContain(slug('a-ring'));
+    expect(slugs).not.toContain(slug('hidden'));
+    expect(res.body.collections.map((c: { slug: string }) => c.slug)).toContain(slug('rings'));
+  });
+});
+
+describe('store settings', () => {
+  it('exposes a valid WhatsApp number and hides a malformed one', async () => {
+    const before = await prisma.storeSetting.findUnique({ where: { key: 'whatsapp' } });
+    try {
+      await prisma.storeSetting.upsert({ where: { key: 'whatsapp' }, create: { key: 'whatsapp', value: { number: '923001234567', message: 'Hi' } }, update: { value: { number: '923001234567', message: 'Hi' } } });
+      expect((await request(app).get('/api/store/settings')).body.whatsapp).toEqual({ number: '923001234567', message: 'Hi' });
+      await prisma.storeSetting.update({ where: { key: 'whatsapp' }, data: { value: { number: 'javascript:alert(1)' } } });
+      expect((await request(app).get('/api/store/settings')).body.whatsapp).toBeNull();
+    } finally {
+      if (before) await prisma.storeSetting.update({ where: { key: 'whatsapp' }, data: { value: before.value as object } });
+      else await prisma.storeSetting.deleteMany({ where: { key: 'whatsapp' } });
+    }
+  });
+});

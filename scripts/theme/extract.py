@@ -95,6 +95,10 @@ def rewrite_urls(text: str, page_dir: str = "") -> str:
         lambda m: f'href="/{m.group(1)}{m.group(2) or ""}"',
         text,
     )
+    # Absolute links to the old Shopify domain become this site's own routes.
+    text = re.sub(r'href="https?://customizedjewellers\.pk/customer_authentication/[^"]*"', 'href="/track-order"', text)
+    text = re.sub(r'href="https?://customizedjewellers\.pk/policies/([a-z-]+)"', r'href="/pages/\1"', text)
+    text = re.sub(r'href="https?://customizedjewellers\.pk(/[^"]*)?"', lambda m: f'href="{m.group(1) or "/"}"', text)
     # Bare sibling links on a nested page, e.g. href="customize-name-cufflinks.html" on /products/*
     if page_dir:
         text = re.sub(
@@ -209,6 +213,7 @@ def main() -> None:
                 (pages_dir / f"{path.stem}{suffix}.html").write_text(rewrite_urls(strip_noise(html), "pages").strip() + "\n", encoding="utf-8")
 
     derived_stylesheets(sheets)
+    public_url("cdn.shopify.com/s/files/1/0033/3538/9233/files/1905.png")  # WhatsApp widget icon
     (OUT_PUBLIC).mkdir(parents=True, exist_ok=True)
     (OUT_PUBLIC / "head.css").write_text(head_css or "", encoding="utf-8")
     for name in KEEP_JS:

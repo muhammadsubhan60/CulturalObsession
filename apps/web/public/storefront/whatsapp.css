@@ -1,0 +1,18 @@
+/* WhatsApp chat button: the app's CSS variables (set on <html> by its script) and animation helpers. */
+:root {
+  --pushdaddy-position-bottom: 20px;
+  --pushy-pending-color: #fff;
+  --faq-bg-color: black;
+  --share_radius: 20px;
+  --pushy-pending-background: red;
+  --pushdaddy-color: #ffffff;
+  --pushdaddy-background: #1e1e20;
+  --pushdaddy-background2: #1e1e20;
+  --pushdaddy-background-dark: #212123;
+  --pushdaddy-background-light: #212123;
+  --pushdaddy-box-shadow: rgba(0, 0, 0, 0.06) 0 1px 6px 0, rgba(0, 0, 0, 0.16) 0 2px 32px 0;
+  --pushdaddy-share-color: #2a2c2b;
+  --pushdaddy-share-background: #d8ab2e;
+}
+.pwapp-animated{-webkit-animation-duration:4s;animation-duration:4s;-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-delay:1s;animation-delay:1s}.pwapp-animated.pwapp-infinite{-webkit-animation-iteration-count:infinite;animation-iteration-count:infinite}.pwapp-animated.pwapp-onlyonce{-webkit-animation-iteration-count:1;animation-iteration-count:1}.pwapp-animated.pwapp-onlytwo{-webkit-animation-iteration-count:2;animation-iteration-count:2}.pwapp-animated.pwapp-onlythree{-webkit-animation-iteration-count:3;animation-iteration-count:3}.pwapp-animated.pwapp-onlyfour{-webkit-animation-iteration-count:4;animation-iteration-count:4}.pwapp-animated.pwapp-onlyfive{-webkit-animation-iteration-count:5;animation-iteration-count:5}.pwapp-animated.pwapp-onlysix{-webkit-animation-iteration-count:6;animation-iteration-count:6}
+#pushdaddy-button:focus-visible{outline:2px solid #3d081b;outline-offset:4px}

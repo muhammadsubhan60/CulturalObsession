@@ -81,6 +81,12 @@ function mainSectionHtml(product: StoreProduct): { html: string; gpoHtml: string
   const galleryEnd = html.indexOf(slides[slides.length - 1]!) + slides[slides.length - 1]!.length;
   html = html.slice(0, galleryStart) + product.images.map((img, i) => slideHtml(slideTemplate, img, i, title)).join('') + html.slice(galleryEnd);
   html = html.replace(/(<span class="slider-counter--total">)\d+(<\/span>)/, `$1${Math.max(1, product.images.length)}$2`);
+  if (product.images.length <= 1) {
+    // Dawn's single-media gallery: a plain list and no slider buttons on phones.
+    html = html
+      .replace(/(<ul id="Slider-Gallery-[^"]+" class="[^"]*") role="presentation"/, '$1 role="list"')
+      .replace('<div class="slider-buttons no-js-hidden quick-add-hidden">', '<div class="slider-buttons no-js-hidden quick-add-hidden small-hide">');
+  }
 
   // Thumbnails only when there is more than one image (Dawn's rule).
   const thumbStart = html.indexOf('<slider-component id="GalleryThumbnails-');
@@ -174,7 +180,6 @@ export default async function ProductPage({ params, searchParams }: { params: Pa
       );
     }
     if (el.name === 'pickup-availability') return null;
-    if (el.name === 'form' && el.attribs.id === `product-form-installment-${SID}`) return null;
     if (el.name === 'div' && hasClass(el, 'product__accordion')) {
       return (
         <>
@@ -186,8 +191,28 @@ export default async function ProductPage({ params, searchParams }: { params: Pa
     return undefined;
   });
 
+  // Same structured data the theme published (Product with offers), for search engines.
+  const site = siteUrl();
+  const jsonLd = {
+    '@context': 'http://schema.org/',
+    '@type': 'Product',
+    name: product.title,
+    url: `${site}/products/${product.slug}`,
+    image: product.images.map((i) => i.url).filter(Boolean),
+    description: product.descriptionHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+    brand: { '@type': 'Brand', name: product.vendor ?? 'Cultural Obsession' },
+    offers: product.variants.map((v) => ({
+      '@type': 'Offer',
+      availability: v.available ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock',
+      price: (v.pricePaisa / 100).toFixed(2),
+      priceCurrency: 'PKR',
+      url: `${site}/products/${product.slug}?variant=${v.id}`,
+    })),
+  };
+
   return (
     <StoreChrome template="product">
+      <script type="application/ld+json">{JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
       <ProductProvider product={product} sectionId={SID} initialVariantId={initial?.id}>
         {main}
       </ProductProvider>

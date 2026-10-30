@@ -15,6 +15,7 @@ const SCRIPTS = [
   `${THEME_JS}/show-more.js`,
   '/storefront/facets.js',
   '/storefront/forms.js',
+  '/storefront/whatsapp.js',
 ];
 
 /**

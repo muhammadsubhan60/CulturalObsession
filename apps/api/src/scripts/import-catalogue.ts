@@ -177,6 +177,12 @@ try {
     create: { key: 'home.featuredCollections', value: Object.keys(catalogue.homeFeatured) },
     update: {},
   });
+  // The WhatsApp chat button's number and greeting, as configured in the Shopify app.
+  await prisma.storeSetting.upsert({
+    where: { key: 'whatsapp' },
+    create: { key: 'whatsapp', value: { number: '923176642250', message: 'I want to purchase your product' } },
+    update: {},
+  });
   console.log(`done: ${created} products created, ${skipped} already existed`);
 } finally {
   await prisma.$disconnect();

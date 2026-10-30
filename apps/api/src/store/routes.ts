@@ -225,6 +225,31 @@ export function storeRouter({ prisma, storage }: { prisma: PrismaClient; storage
     }),
   );
 
+  /** Public store settings the storefront needs (WhatsApp chat button). */
+  r.get(
+    '/settings',
+    handle(async (_req, res) => {
+      const row = await prisma.storeSetting.findUnique({ where: { key: 'whatsapp' } });
+      const whatsapp = z
+        .object({ number: z.string().regex(/^\d{10,15}$/), message: z.string().max(300).default('') })
+        .nullable()
+        .catch(null)
+        .parse(row?.value ?? null);
+      res.json({ whatsapp });
+    }),
+  );
+
+  r.get(
+    '/sitemap',
+    handle(async (_req, res) => {
+      const [products, collections] = await Promise.all([
+        prisma.product.findMany({ where: { status: 'ACTIVE' }, select: { slug: true, updatedAt: true }, orderBy: { slug: 'asc' } }),
+        prisma.category.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true }, orderBy: { sortOrder: 'asc' } }),
+      ]);
+      res.json({ products, collections });
+    }),
+  );
+
   r.get(
     '/search',
     handle(async (req, res) => {

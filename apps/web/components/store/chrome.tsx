@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { renderTheme } from '@/lib/theme/render';
 import { sectionHtml, stylesheetsFor, type TemplateName } from '@/lib/theme/sections';
+import { WhatsAppWidget } from './whatsapp-widget';
 
 /** Marks the menu link for `currentPath` active exactly as the theme did (desktop menu and drawer). */
 function headerFor(currentPath: string | null): string {
@@ -46,6 +47,7 @@ export function StoreChrome({
         {children}
       </main>
       {renderTheme(sectionHtml('home', 'footer'))}
+      <WhatsAppWidget />
     </>
   );
 }
