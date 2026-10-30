@@ -5,8 +5,8 @@ The storefront keeps the current theme exactly; see [docs/PLAN.md](docs/PLAN.md)
 
 | Path | What | Deploys to |
 |---|---|---|
-| `apps/web` | Next.js storefront + `/admin` | Vercel (`sin1`) |
-| `apps/api` | Express API | Railway (`asia-southeast`) |
+| `apps/web` | Next.js storefront + `/admin` | Railway (Singapore) |
+| `apps/api` | Express API | Railway (Singapore) |
 | `apps/worker` | Cron jobs | Railway cron |
 | `packages/db` | Prisma schema + client | — |
 | `packages/shared` | Money, phone, shared Zod schemas | — |
@@ -32,12 +32,12 @@ Checks: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
   | Service | Build | Start | Other |
   |---|---|---|---|
   | `@co/api` | `pnpm --filter @co/db generate && pnpm --filter @co/api build` | `pnpm --filter @co/api start` | pre-deploy `pnpm --filter @co/db migrate:deploy`, health `/health`, port 4000, domain `api.culturalobsession.deltalabs.tech` |
+  | `@co/web` | `pnpm --filter @co/web build` | `pnpm --filter @co/web start` | health `/admin/login`, port 8080, domain `culturalobsession.deltalabs.tech` |
   | `@co/worker` | `pnpm --filter @co/db generate && pnpm --filter @co/worker build` | `pnpm --filter @co/worker start` | cron `*/15 * * * *`, restart never |
   | `Postgres` | — | — | referenced as `${{Postgres.DATABASE_URL}}` |
 
   API variables: see `apps/api/.env.example`.
-- **Vercel:** project root `apps/web` (config `apps/web/vercel.json`).
-- Web on the apex domain, API on `api.` subdomain — required for same-site admin cookies.
+- Web on `culturalobsession.deltalabs.tech`, API on `api.culturalobsession.deltalabs.tech` — same parent domain, so admin cookies stay same-site.
 
 The locked theme comes from the public-site mirror described in [docs/MIRROR.md](docs/MIRROR.md).
 

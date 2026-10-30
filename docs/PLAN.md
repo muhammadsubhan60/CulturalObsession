@@ -7,9 +7,10 @@ Finalized 2026-10-30. Progress is tracked in Workly24 (Delta Labs → project "C
 
 - **Frontend is locked.** The storefront keeps the current Dawn theme exactly (layout, CSS,
   fonts, colours, copy, URLs). Source of truth: `customizedjewellers-mirror/site/`.
-- **Hosting:** `apps/web` (Next.js) on **Vercel**, `apps/api` + PostgreSQL + cron on **Railway**.
-  Same parent domain: `domain.pk` (web) and `api.domain.pk` (api) so admin cookies stay same-site.
-  Regions: Railway `asia-southeast`, Vercel functions `sin1`.
+- **Hosting:** everything on **Railway** in Singapore (`asia-southeast1-eqsg3a`): `@co/web` (Next.js),
+  `@co/api`, `@co/worker` (cron) and PostgreSQL. Web on `culturalobsession.deltalabs.tech`, API on
+  `api.culturalobsession.deltalabs.tech`, so admin cookies stay same-site. (Changed from Vercel on
+  2026-10-30: Hobby plan forbids commercial use and the repo could not be linked.)
 - **Database:** PostgreSQL + Prisma. Money stored as integer paisa.
 - **Admin UI only:** Tailwind + shadcn/ui + 21st.dev + UI UX Pro Max, scoped to `/admin`.
   Never loaded on storefront pages (Tailwind preflight would break Dawn).
@@ -20,12 +21,12 @@ Finalized 2026-10-30. Progress is tracked in Workly24 (Delta Labs → project "C
   details live in admin settings. Safepay later.
 - **Inventory:** `trackInventory` per variant; made-to-order items skip stock reservation.
 - **Couriers:** shared adapter interface; manual booking first; PostEx, Trax, Leopards first adapters.
-- **Media:** S3 (or Cloudflare R2), private bucket for customer artwork, pre-sized product images behind CDN.
+- **Media:** Cloudflare R2 (S3-compatible, no egress fees): public bucket for product photos, private bucket for customer artwork.
 
 ## Repository layout
 
 ```
-apps/web      Next.js storefront (Dawn port) + /admin   → Vercel
+apps/web      Next.js storefront (Dawn port) + /admin   → Railway
 apps/api      Node API: catalogue, checkout, orders, couriers, payments, webhooks → Railway
 apps/worker   Cron jobs: reservation expiry, courier polling, pg_dump → S3     → Railway
 packages/db   Prisma schema, migrations, client (used by api + worker only)
@@ -38,7 +39,7 @@ packages/shared  Zod schemas, types, money helpers (used everywhere)
 1. pnpm monorepo, TypeScript, ESLint, Prettier, Vitest, GitHub Actions CI
 2. `apps/web`, `apps/api`, `apps/worker`, `packages/db`, `packages/shared` scaffolds
 3. Railway project: api service, PostgreSQL, worker service (asia-southeast)
-4. Vercel project for `apps/web` (sin1) and env var wiring
+4. Railway web service for `apps/web` and env var wiring
 5. Domain + DNS: web on apex, `api.` subdomain on Railway, HTTPS
 6. `.env.example` files for every app (no secrets committed)
 
