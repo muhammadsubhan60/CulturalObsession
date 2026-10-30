@@ -26,8 +26,16 @@ Checks: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 
 ## Deploy
 
-- **Railway:** one project with PostgreSQL, an `api` service (config `apps/api/railway.json`)
-  and a `worker` cron service (`apps/worker/railway.json`). Root directory stays the repo root.
+- **Railway** (project `unique-strength`, region `asia-southeast1-eqsg3a` / Singapore), root directory = repo root,
+  builder Railpack, Node from `.node-version`. Settings live on the services (Railway no longer reads `railway.json`):
+
+  | Service | Build | Start | Other |
+  |---|---|---|---|
+  | `@co/api` | `pnpm --filter @co/db generate && pnpm --filter @co/api build` | `pnpm --filter @co/api start` | pre-deploy `pnpm --filter @co/db migrate:deploy`, health `/health`, port 4000, domain `api.culturalobsession.deltalabs.tech` |
+  | `@co/worker` | `pnpm --filter @co/db generate && pnpm --filter @co/worker build` | `pnpm --filter @co/worker start` | cron `*/15 * * * *`, restart never |
+  | `Postgres` | — | — | referenced as `${{Postgres.DATABASE_URL}}` |
+
+  API variables: see `apps/api/.env.example`.
 - **Vercel:** project root `apps/web` (config `apps/web/vercel.json`).
 - Web on the apex domain, API on `api.` subdomain — required for same-site admin cookies.
 
