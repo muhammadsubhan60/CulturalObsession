@@ -55,7 +55,10 @@
     "gun-coat-pin",
     "eid-milad-un-nabi-batch",
     "stylish-coat-pin",
-    "crown-moch-coat-pin"
+    "crown-moch-coat-pin",
+    "chain-coat-pin",
+    "new-coat-pins",
+    "new-stylish-coat-pin"
    ],
    "sortOrder": 5
   },
@@ -83,7 +86,27 @@
     "silver-cufflinks",
     "star-studs",
     "chain-cufflinks",
-    "new-special-cufflinks"
+    "new-special-cufflinks",
+    "alphabet-cufflinks",
+    "brand-design-cufflinks",
+    "cast-urdu-cufflinks",
+    "chain-stylish-cuffs",
+    "customize-cufflinks-single-name",
+    "customize-cufflinks-with-chain",
+    "customize-cufflinks-with-your-name",
+    "customize-name-cufflinks",
+    "customize-urdu-name-cufflinks",
+    "eagle-design-cufflinks",
+    "mooch-studs-cufflinks",
+    "new-chain-cufflinks",
+    "new-crown-cufflinks",
+    "new-cuff-studs",
+    "new-fashion-cufflinks",
+    "rolex-cufflinks",
+    "round-name-cufflinks",
+    "special-customize-cufflinks",
+    "stylish-style-cufflinks-new",
+    "two-alphabet-cufflinks"
    ],
    "sortOrder": 1
   },
@@ -111,7 +134,12 @@
     "custom-heart-cuff-bangle",
     "customize-name-cufflinks-1",
     "stylish-name-necklace-1",
-    "adjustable-crown-name-ring"
+    "adjustable-crown-name-ring",
+    "customize-eidi-envelope",
+    "eidi-envelop-with-your-name",
+    "name-eidi-envelop",
+    "new-eidi-card-box",
+    "valvet-eid-car-box"
    ],
    "sortOrder": 2
   },
@@ -173,7 +201,27 @@
     "3d-bar-necklace",
     "necklace-butterfly",
     "3mm-name-necklace",
-    "butterfly-chain-necklace"
+    "butterfly-chain-necklace",
+    "allah-name-locket",
+    "alphabet-necklace",
+    "alphabet-necklace-1",
+    "arabic-two-words-necklace",
+    "butterfly-heart-necklace",
+    "butterfly-necklace",
+    "crown-heart-necklace",
+    "double-chain-name-necklace",
+    "double-heart-necklace",
+    "double-name-necklace-1",
+    "holy-necklace",
+    "love-necklace-1",
+    "moon-name-locket",
+    "necklace-design-1",
+    "necklace-design-5",
+    "new-crown-heart-necklace",
+    "new-hear-necklace",
+    "new-heart-name-necklace",
+    "new-name-locket",
+    "two-alphabet-name-necklace"
    ],
    "sortOrder": 0
   },
@@ -246,17 +294,17 @@
    ],
    "images": [
     {
-     "mediaId": 34792938275117,
-     "file": "customizedjewellers.pk/cdn/shop/files/Screenshot_20230703-042501__01.jpg",
-     "width": 1946,
-     "height": 2384,
-     "alt": null
-    },
-    {
      "mediaId": 34792938242349,
      "file": "customizedjewellers.pk/cdn/shop/files/Screenshot_20230703-042417__01.jpg",
      "width": 1946,
      "height": 2427,
+     "alt": null
+    },
+    {
+     "mediaId": 34792938275117,
+     "file": "customizedjewellers.pk/cdn/shop/files/Screenshot_20230703-042501__01.jpg",
+     "width": 1946,
+     "height": 2384,
      "alt": null
     }
    ],
@@ -626,17 +674,17 @@
    ],
    "images": [
     {
-     "mediaId": 42283298226477,
-     "file": "customizedjewellers.pk/cdn/shop/files/rn-image_picker_lib_temp_9e0b53cb-520f-41d0-b628-282f7908f187.jpg",
-     "width": 1946,
-     "height": 3386,
-     "alt": null
-    },
-    {
      "mediaId": 42283298160941,
      "file": "customizedjewellers.pk/cdn/shop/files/rn-image_picker_lib_temp_e11f5329-1533-4442-8a78-84c6785194a2.jpg",
      "width": 1946,
      "height": 3356,
+     "alt": null
+    },
+    {
+     "mediaId": 42283298226477,
+     "file": "customizedjewellers.pk/cdn/shop/files/rn-image_picker_lib_temp_9e0b53cb-520f-41d0-b628-282f7908f187.jpg",
+     "width": 1946,
+     "height": 3386,
      "alt": null
     },
     {
@@ -712,7 +760,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "alphabet-cufflinks",
@@ -770,7 +819,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "alphabet-necklace",
@@ -838,7 +888,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "alphabet-necklace-1",
@@ -896,7 +947,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "arabic-urdu-name-necklace",
@@ -1123,7 +1175,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "bangles-for-girls",
@@ -1499,7 +1552,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "butterfly-chain-necklace",
@@ -1599,7 +1653,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "butterfly-necklace",
@@ -1664,7 +1719,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "cast-cufflinks",
@@ -1809,7 +1865,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "chain-coat-pin",
@@ -1855,7 +1912,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "coat-pin"
   },
   {
    "handle": "chain-cufflinks",
@@ -1992,7 +2050,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "coat-pin-with-your-name",
@@ -2229,7 +2288,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "crown-moch-coat-pin",
@@ -2785,17 +2845,17 @@
    ],
    "images": [
     {
-     "mediaId": 43871205032237,
-     "file": "customizedjewellers.pk/cdn/shop/files/imgi_1_545398454_17948671818033189_4141066988973960134_n.jpg",
-     "width": 1946,
-     "height": 2427,
-     "alt": null
-    },
-    {
      "mediaId": 43871204770093,
      "file": "customizedjewellers.pk/cdn/shop/files/imgi_1_482304194_18038930552382862_6307791873603710995_n.webp",
      "width": 1946,
      "height": 1956,
+     "alt": null
+    },
+    {
+     "mediaId": 43871205032237,
+     "file": "customizedjewellers.pk/cdn/shop/files/imgi_1_545398454_17948671818033189_4141066988973960134_n.jpg",
+     "width": 1946,
+     "height": 2427,
      "alt": null
     },
     {
@@ -3080,7 +3140,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "customize-cufflinks-with-ak47",
@@ -3166,7 +3227,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "customize-cufflinks-with-your-name",
@@ -3201,7 +3263,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "customize-eidi-envelope",
@@ -3355,7 +3418,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "customize-jewelry"
   },
   {
    "handle": "customize-name-cufflinks",
@@ -3390,7 +3454,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "customize-name-cufflinks-1",
@@ -3537,7 +3602,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "customized-925-sterling-name-necklace-for-women-birthday-gift",
@@ -3702,7 +3768,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "double-heart-necklace",
@@ -3760,7 +3827,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "double-name-necklace",
@@ -3862,7 +3930,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "eagle-design-cufflinks",
@@ -3906,7 +3975,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "eid-milad-un-nabi-batch",
@@ -4194,7 +4264,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "customize-jewelry"
   },
   {
    "handle": "elegant-name-earrings",
@@ -4547,7 +4618,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "karra-bangle",
@@ -4840,7 +4912,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "mooch-cufflinks",
@@ -5014,7 +5087,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "moon-name-locket",
@@ -5065,7 +5139,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "mouch-cufflinks",
@@ -5303,7 +5378,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "customize-jewelry"
   },
   {
    "handle": "name-open-bangle",
@@ -5382,17 +5458,17 @@
    ],
    "images": [
     {
-     "mediaId": 32801153876269,
-     "file": "customizedjewellers.pk/cdn/shop/products/IMG-20230131-WA0200.jpg",
-     "width": 1946,
-     "height": 1397,
-     "alt": null
-    },
-    {
      "mediaId": 32801150075181,
      "file": "customizedjewellers.pk/cdn/shop/products/IMG-20230131-WA0218.jpg",
      "width": 1946,
      "height": 4440,
+     "alt": null
+    },
+    {
+     "mediaId": 32801153876269,
+     "file": "customizedjewellers.pk/cdn/shop/products/IMG-20230131-WA0200.jpg",
+     "width": 1946,
+     "height": 1397,
      "alt": null
     }
    ],
@@ -5445,7 +5521,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "necklace-design-5",
@@ -5487,7 +5564,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "new-bangle",
@@ -5599,7 +5677,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "new-coat-pins",
@@ -5686,7 +5765,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "coat-pin"
   },
   {
    "handle": "new-crown-cufflinks",
@@ -5737,7 +5817,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "new-crown-heart-necklace",
@@ -5788,7 +5869,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "new-cuff-studs",
@@ -5846,7 +5928,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "new-design-bangle",
@@ -6437,7 +6520,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "customize-jewelry"
   },
   {
    "handle": "new-fashion-cufflinks",
@@ -6495,7 +6579,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "new-hand-bangle",
@@ -6520,17 +6605,17 @@
    ],
    "images": [
     {
-     "mediaId": 43379189055789,
-     "file": "customizedjewellers.pk/cdn/shop/files/DSC_9979.jpg",
-     "width": 1946,
-     "height": 1889,
-     "alt": null
-    },
-    {
      "mediaId": 43379189023021,
      "file": "customizedjewellers.pk/cdn/shop/files/DSC_0067.jpg",
      "width": 1946,
      "height": 1269,
+     "alt": null
+    },
+    {
+     "mediaId": 43379189055789,
+     "file": "customizedjewellers.pk/cdn/shop/files/DSC_9979.jpg",
+     "width": 1946,
+     "height": 1889,
      "alt": null
     }
    ],
@@ -6592,7 +6677,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "new-heart-name-necklace",
@@ -6643,7 +6729,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "new-name-locket",
@@ -6718,7 +6805,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "new-special-cufflinks",
@@ -6896,7 +6984,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "coat-pin"
   },
   {
    "handle": "personalized-name-bangles",
@@ -7103,17 +7192,17 @@
    ],
    "images": [
     {
-     "mediaId": 42281766060333,
-     "file": "customizedjewellers.pk/cdn/shop/files/IMAGE-EDIT_28c94773-291c-4d55-adbb-493e4bfe408b.png",
-     "width": 1946,
-     "height": 2391,
-     "alt": null
-    },
-    {
      "mediaId": 42281766027565,
      "file": "customizedjewellers.pk/cdn/shop/files/IMAGE-EDIT_07a0e71a-4155-403f-b5e8-eb4167297bf0.png",
      "width": 1946,
      "height": 2380,
+     "alt": null
+    },
+    {
+     "mediaId": 42281766060333,
+     "file": "customizedjewellers.pk/cdn/shop/files/IMAGE-EDIT_28c94773-291c-4d55-adbb-493e4bfe408b.png",
+     "width": 1946,
+     "height": 2391,
      "alt": null
     },
     {
@@ -7333,17 +7422,17 @@
    ],
    "images": [
     {
-     "mediaId": 42236633710893,
-     "file": "customizedjewellers.pk/cdn/shop/files/IMG-20250224_033725.jpg",
-     "width": 1946,
-     "height": 2633,
-     "alt": null
-    },
-    {
      "mediaId": 42236633678125,
      "file": "customizedjewellers.pk/cdn/shop/files/IMG-20250224_033742.jpg",
      "width": 1946,
      "height": 2496,
+     "alt": null
+    },
+    {
+     "mediaId": 42236633710893,
+     "file": "customizedjewellers.pk/cdn/shop/files/IMG-20250224_033725.jpg",
+     "width": 1946,
+     "height": 2633,
      "alt": null
     }
    ],
@@ -7429,7 +7518,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "round-name-cufflinks",
@@ -7464,7 +7554,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "shine-necklace",
@@ -7824,7 +7915,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "special-customize-name-cufflinks",
@@ -8070,17 +8162,17 @@
    ],
    "images": [
     {
-     "mediaId": 42090306404653,
-     "file": "customizedjewellers.pk/cdn/shop/files/IMG-20250202-WA0002.jpg",
-     "width": 1946,
-     "height": 2687,
-     "alt": null
-    },
-    {
      "mediaId": 42090306371885,
      "file": "customizedjewellers.pk/cdn/shop/files/IMG-20250202-WA0001.jpg",
      "width": 1946,
      "height": 2633,
+     "alt": null
+    },
+    {
+     "mediaId": 42090306404653,
+     "file": "customizedjewellers.pk/cdn/shop/files/IMG-20250202-WA0002.jpg",
+     "width": 1946,
+     "height": 2687,
      "alt": null
     }
    ],
@@ -8131,17 +8223,17 @@
    ],
    "images": [
     {
-     "mediaId": 35707776172333,
-     "file": "customizedjewellers.pk/cdn/shop/files/Screenshot_20230826-041045__01.jpg",
-     "width": 1946,
-     "height": 1804,
-     "alt": null
-    },
-    {
      "mediaId": 35707776139565,
      "file": "customizedjewellers.pk/cdn/shop/files/Screenshot_20230826-041126__01.jpg",
      "width": 1946,
      "height": 2092,
+     "alt": null
+    },
+    {
+     "mediaId": 35707776172333,
+     "file": "customizedjewellers.pk/cdn/shop/files/Screenshot_20230826-041045__01.jpg",
+     "width": 1946,
+     "height": 1804,
      "alt": null
     }
    ],
@@ -8317,17 +8409,17 @@
    ],
    "images": [
     {
-     "mediaId": 43955768033581,
-     "file": "customizedjewellers.pk/cdn/shop/files/IMG_7857.jpg",
-     "width": 1946,
-     "height": 2746,
-     "alt": null
-    },
-    {
      "mediaId": 43955767968045,
      "file": "customizedjewellers.pk/cdn/shop/files/IMG_7855.jpg",
      "width": 1946,
      "height": 2457,
+     "alt": null
+    },
+    {
+     "mediaId": 43955768033581,
+     "file": "customizedjewellers.pk/cdn/shop/files/IMG_7857.jpg",
+     "width": 1946,
+     "height": 2746,
      "alt": null
     },
     {
@@ -8610,7 +8702,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "two-alphabet-cufflinks",
@@ -8659,7 +8752,8 @@
      "required": true,
      "fieldType": "text"
     }
-   ]
+   ],
+   "placedByKeyword": "cufflinks"
   },
   {
    "handle": "two-alphabet-name-necklace",
@@ -8703,7 +8797,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "necklace"
   },
   {
    "handle": "two-in-one-ring-bracelet",
@@ -8752,15 +8847,15 @@
    ],
    "images": [
     {
-     "mediaId": 33132487639341,
-     "file": "customizedjewellers.pk/cdn/shop/products/1677604824197.png",
+     "mediaId": 33132487606573,
+     "file": "customizedjewellers.pk/cdn/shop/products/d2_44904982-65b4-49e9-83a7-d8e069044b16.gif",
      "width": 1946,
      "height": 1946,
      "alt": null
     },
     {
-     "mediaId": 33132487606573,
-     "file": "customizedjewellers.pk/cdn/shop/products/d2_44904982-65b4-49e9-83a7-d8e069044b16.gif",
+     "mediaId": 33132487639341,
+     "file": "customizedjewellers.pk/cdn/shop/products/1677604824197.png",
      "width": 1946,
      "height": 1946,
      "alt": null
@@ -9303,7 +9398,8 @@
      "alt": null
     }
    ],
-   "personalization": []
+   "personalization": [],
+   "placedByKeyword": "customize-jewelry"
   },
   {
    "handle": "zicron-crown-necklace-1",

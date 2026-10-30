@@ -29,6 +29,25 @@ def asset_path(src: str) -> str | None:
     return m.group(1) if m and (SITE / "assets" / m.group(1)).is_file() else None
 
 
+def card_images() -> dict[str, str]:
+    """Each product's featured image as shown on listing cards (product pages lead with the variant's)."""
+    out: dict[str, str] = {}
+    pages = [SITE / "index.html", *sorted((SITE / "collections").glob("*.html"))]
+    for page in pages:
+        doc = page.read_text(encoding="utf-8")
+        for card in re.findall(r'<div class="card-wrapper.*?</h3>', doc, re.S):
+            href = re.search(r'href="(?:\.\./)*products/([a-z0-9-]+)\.html', card)
+            img = re.search(r'<img [^>]*src="([^"]+)"', card)
+            if href and img and href.group(1) not in out:
+                path = asset_path(img.group(1))
+                if path:
+                    out[href.group(1)] = path
+    return out
+
+
+CARD_IMAGES: dict[str, str] = {}
+
+
 def product(handle: str) -> dict:
     site = (SITE / "products" / f"{handle}.html").read_text(encoding="utf-8")
     raw = (RAW / "products" / f"{handle}.html").read_text(encoding="utf-8")
@@ -96,6 +115,10 @@ def product(handle: str) -> dict:
             }
         )
 
+    featured = CARD_IMAGES.get(handle)
+    if featured:
+        images.sort(key=lambda i: 0 if i["file"] == featured else 1)
+
     fields = []
     # Globo options render client-side; fall back to the browser-rendered capture when the page lacks them.
     gpo_doc = site if "gpo-label" in site else raw
@@ -133,7 +156,38 @@ def home_featured() -> dict[str, list[str]]:
     return out
 
 
+# Only the first page of each collection was captured. Products that appear in none of them are
+# placed by title keyword (first match wins) so the storefront menu shows them; staff can adjust.
+KEYWORD_COLLECTIONS = [
+    (r"shawl", "winter-jents-shawls"),
+    (r"coat[ -]?pin", "coat-pin"),
+    (r"cuff(?!-?bangle)|stud|mooch|mouch", "cufflinks"),
+    (r"earring|tops", "earrings"),
+    (r"bangle|karra|kara\b", "bangles"),
+    (r"bracelet", "bracelets"),
+    (r"\bring", "rings"),
+    (r"necklace|pendant|locket|chain", "necklace"),
+    (r"eidi|envelop|tray|batch|card", "customize-jewelry"),
+]
+
+
+def place_orphans(collections: list[dict], products: list[dict]) -> int:
+    by_handle = {c["handle"]: c for c in collections}
+    placed = 0
+    for p in products:
+        if any(p["handle"] in c["products"] for c in collections):
+            continue
+        for pattern, handle in KEYWORD_COLLECTIONS:
+            if re.search(pattern, p["title"], re.I) and handle in by_handle:
+                by_handle[handle]["products"].append(p["handle"])
+                p["placedByKeyword"] = handle
+                placed += 1
+                break
+    return placed
+
+
 def main() -> None:
+    CARD_IMAGES.update(card_images())
     menu_order = list(dict.fromkeys(re.findall(r'<a href="collections/([a-z0-9-]+)\.html" class="header__menu-item', (SITE / "index.html").read_text(encoding="utf-8"))))
     collections = [collection(p.stem) for p in sorted((SITE / "collections").glob("*.html")) if p.stem != "all"]
     featured = home_featured()
@@ -146,11 +200,13 @@ def main() -> None:
     handles = sorted(p.stem for p in (SITE / "products").glob("*.html"))
     handles.sort(key=lambda h: all_order.index(h) if h in all_order else len(all_order))
     products = [product(h) for h in handles]
+    placed = place_orphans(collections, products)
     out = {"source": "customizedjewellers-mirror 2026-10-30", "collections": collections, "products": products, "homeFeatured": featured}
     target = REPO / "data/catalogue.json"
     target.parent.mkdir(exist_ok=True)
     target.write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     pers = sum(1 for p in products if p["personalization"])
+    print(f"placed by keyword={placed}, still without a collection={sum(1 for p in products if not any(p['handle'] in c['products'] for c in collections))}")
     print(f"collections={len(collections)} products={len(products)} variants={sum(len(p['variants']) for p in products)} images={sum(len(p['images']) for p in products)} personalized={pers}")
 
 

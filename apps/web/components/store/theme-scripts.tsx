@@ -13,6 +13,7 @@ const SCRIPTS = [
   `${THEME_JS}/product-modal.js`,
   `${THEME_JS}/share.js`,
   `${THEME_JS}/show-more.js`,
+  '/storefront/facets.js',
 ];
 
 /**

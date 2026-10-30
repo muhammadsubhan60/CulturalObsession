@@ -131,7 +131,9 @@ def sections_of(doc: str) -> list[tuple[str, str]]:
 
 
 def stylesheets(doc: str) -> list[str]:
-    hrefs = []
+    """Theme stylesheets in document order. A sheet linked twice cascades from its last link,
+    so duplicates keep their last position (e.g. component-price.css after component-card.css)."""
+    hrefs: list[str] = []
     for m in re.finditer(r'<link\b[^>]*rel="stylesheet"[^>]*>|<link\b[^>]*href="[^"]+\.css[^"]*"[^>]*>', doc, re.I):
         href = re.search(r'href="([^"]+)"', m.group(0))
         if not href or DROP_HREF.search(href.group(1)):
@@ -139,8 +141,9 @@ def stylesheets(doc: str) -> list[str]:
         rel = asset_rel(href.group(1))
         if rel and rel.endswith(".css") and rel.startswith(THEME_ASSET_DIRS) or (rel and "whatsappchat" in rel):
             url = public_url(rel)
-            if url not in hrefs:
-                hrefs.append(url)
+            if url in hrefs:
+                hrefs.remove(url)
+            hrefs.append(url)
     return hrefs
 
 

@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import type { Auth } from './auth/auth';
 import { catalogRouter } from './catalog/routes';
 import type { Storage } from './storage/s3';
+import { storeRouter } from './store/routes';
 import { uploadRouter } from './uploads/routes';
 import type { Env } from './env';
 import { errorHandler } from './http/errors';
@@ -33,6 +34,7 @@ export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient; st
     res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   });
 
+  app.use('/api/store', storeRouter(deps));
   app.use('/api/admin', catalogRouter(deps));
   app.use('/api/admin', uploadRouter(deps));
 

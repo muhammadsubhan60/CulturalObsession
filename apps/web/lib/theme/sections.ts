@@ -21,5 +21,10 @@ export function sectionHtml(template: TemplateName, name: string): string {
   return html;
 }
 
-/** Every theme stylesheet, base.css first, de-duplicated across templates. */
-export const THEME_STYLESHEETS: string[] = Array.from(new Set(Object.values(stylesheets).flat()));
+/**
+ * The template's theme stylesheets in the order the live store applied them. The order decides
+ * cascade ties between theme files, so pages must not share one merged list.
+ */
+export function stylesheetsFor(template: TemplateName): string[] {
+  return stylesheets[template];
+}

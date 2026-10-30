@@ -29,6 +29,7 @@ type CatalogueVariant = {
 };
 type CatalogueProduct = {
   handle: string;
+  options: string[];
   title: string;
   descriptionHtml: string;
   variants: CatalogueVariant[];
@@ -82,7 +83,12 @@ try {
   console.log(`collections: ${categoryIds.size}`);
 
   for (const [index, p] of catalogue.products.entries()) {
-    if (await prisma.product.findUnique({ where: { slug: p.handle }, select: { id: true } })) {
+    const existing = await prisma.product.findUnique({ where: { slug: p.handle }, select: { id: true, optionNames: true } });
+    if (existing) {
+      // Backfill fields added after the first import, never overwriting staff edits.
+      if (!existing.optionNames.length && p.options.length) {
+        await prisma.product.update({ where: { id: existing.id }, data: { optionNames: p.options } });
+      }
       skipped++;
       continue;
     }
@@ -105,6 +111,7 @@ try {
           vendor: 'Cultural Obsession',
           status: 'ACTIVE',
           productType: p.personalization.length ? 'PERSONALIZABLE' : 'READY_MADE',
+          optionNames: p.options,
           categories: { create: memberships },
         },
       });

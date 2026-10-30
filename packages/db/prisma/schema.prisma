@@ -142,6 +142,8 @@ model Product {
   vendor         String?
   status         ProductStatus           @default(DRAFT)
   productType    ProductType             @default(READY_MADE)
+  /// Variant option names in display order (jsonb does not keep key order), e.g. ["Color", "Size"].
+  optionNames    String[]                @default([])
   seoTitle       String?
   seoDescription String?
   categories     ProductCategory[]
