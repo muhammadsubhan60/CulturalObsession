@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { CircleAlert } from 'lucide-react';
+import { CircleAlert, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 /** Label above, control, then either the error (linked via aria-describedby) or helper text. */
@@ -59,5 +60,19 @@ export function Checkbox({ id, label, checked, onChange }: { id: string; label: 
       />
       {label}
     </label>
+  );
+}
+
+/** Cancel + Save row at the bottom of a dialog form. */
+export function DialogActions({ pending, onCancel, label = 'Save' }: { pending: boolean; onCancel: () => void; label?: string }) {
+  return (
+    <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <Button type="button" variant="outline" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button type="submit" disabled={pending}>
+        {pending && <Loader2 className="animate-spin" />} {label}
+      </Button>
+    </div>
   );
 }

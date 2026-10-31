@@ -1,15 +1,9 @@
-import { LayoutDashboard } from 'lucide-react';
-import { Upcoming } from '@/components/admin/upcoming';
+import { getStaffUser } from '@/lib/staff-session';
+import { DashboardScreen } from './dashboard-screen';
 
 export const metadata = { title: 'Dashboard' };
 
-export default function DashboardPage() {
-  return (
-    <Upcoming
-      title="Dashboard"
-      description="Orders to confirm, items to produce and parcels to dispatch."
-      icon={LayoutDashboard}
-      phase="Phase 5 (admin operations)"
-    />
-  );
+export default async function DashboardPage() {
+  const user = await getStaffUser();
+  return <DashboardScreen name={user?.name ?? ''} />;
 }

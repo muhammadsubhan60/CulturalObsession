@@ -285,6 +285,13 @@ describe('staff-entered orders', () => {
     expect((await prisma.order.findUniqueOrThrow({ where: { id: cod.body.order.id } })).status).toBe('CONFIRMED');
   });
 
+  it('lists customers with their order count', async () => {
+    const res = await as(staff).get('/api/admin/customers?q=0333%201112222');
+    expect(res.status).toBe(200);
+    expect(res.body.items[0]).toMatchObject({ phone: '+923331112222', city: 'Islamabad' });
+    expect(res.body.items[0].orderCount).toBeGreaterThanOrEqual(2);
+  });
+
   it('shows the work queue on the dashboard', async () => {
     const res = await as(staff).get('/api/admin/dashboard');
     expect(res.status).toBe(200);

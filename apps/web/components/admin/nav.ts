@@ -10,6 +10,7 @@ import {
   Truck,
   UserCog,
   Users,
+  Wallet,
 } from 'lucide-react';
 
 export type NavItem = { href: string; label: string; icon: LucideIcon; ownerOnly?: boolean };
@@ -21,6 +22,7 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/admin/orders', label: 'Orders', icon: ReceiptText },
+      { href: '/admin/payments', label: 'Advance payments', icon: Wallet },
       { href: '/admin/products', label: 'Products', icon: Gem },
       { href: '/admin/categories', label: 'Collections', icon: FolderTree },
       { href: '/admin/inventory', label: 'Inventory', icon: Boxes },

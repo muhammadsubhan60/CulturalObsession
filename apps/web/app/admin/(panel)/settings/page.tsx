@@ -1,8 +1,9 @@
-import { Settings } from 'lucide-react';
-import { Upcoming } from '@/components/admin/upcoming';
+import { getStaffUser } from '@/lib/staff-session';
+import { StoreSettings } from './store-settings';
 
 export const metadata = { title: 'Store settings' };
 
-export default function Page() {
-  return <Upcoming title="Store settings" description="Order numbers, shipping defaults and notifications." icon={Settings} phase="Phase 5 (settings)" />;
+export default async function Page() {
+  const user = await getStaffUser();
+  return <StoreSettings canEdit={user?.role === 'owner' || user?.role === 'manager'} />;
 }

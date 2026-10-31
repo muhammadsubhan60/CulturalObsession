@@ -26,13 +26,13 @@ function BrandMark() {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
       <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary font-serif text-sm font-bold text-primary-foreground">
-        CJ
+        CO
       </span>
       {!collapsed && (
         <span className="font-serif text-[14px] font-bold leading-[1.15] text-primary">
-          Customized
+          Cultural
           <br />
-          Jewellers
+          Obsession
         </span>
       )}
     </div>
@@ -183,7 +183,7 @@ export function AdminShell({ user, children }: { user: StaffUser; children: Reac
               </Dialog.Content>
             </Dialog.Portal>
           </Dialog.Root>
-          <span className="truncate font-serif text-base font-bold text-primary">Customized Jewellers</span>
+          <span className="truncate font-serif text-base font-bold text-primary">Cultural Obsession</span>
         </header>
 
         <main id="admin-main" className="min-h-0 flex-1 overflow-y-auto">

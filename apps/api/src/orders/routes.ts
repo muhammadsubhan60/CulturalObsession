@@ -399,6 +399,59 @@ export function ordersRouter({ auth, prisma, storage }: { auth: Auth; prisma: Pr
     }),
   );
 
+  // ─── Customers ───
+  r.get(
+    '/customers',
+    staff,
+    handle(async (req, res) => {
+      const { q, page } = z
+        .object({ q: z.string().trim().max(100).optional(), page: z.coerce.number().int().min(1).max(10_000).default(1) })
+        .parse(req.query);
+      const digits = q?.replace(/\D/g, '') ?? '';
+      const where: Prisma.CustomerWhereInput = q
+        ? {
+            OR: [
+              { name: { contains: q, mode: 'insensitive' } },
+              { email: { contains: q.toLowerCase() } },
+              ...(digits.length >= 4 ? [{ phone: { contains: digits.replace(/^0/, '') } }] : []),
+            ],
+          }
+        : {};
+      const pageSize = 25;
+      const [total, customers] = await prisma.$transaction([
+        prisma.customer.count({ where }),
+        prisma.customer.findMany({
+          where,
+          orderBy: { updatedAt: 'desc' },
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          include: {
+            orders: { orderBy: { createdAt: 'desc' }, select: { id: true, orderNumber: true, status: true, totalPaisa: true, createdAt: true } },
+            addresses: { orderBy: { createdAt: 'desc' }, take: 1, select: { city: true } },
+          },
+        }),
+      ]);
+      res.json({
+        items: customers.map((c) => {
+          const kept = c.orders.filter((o) => !['CANCELLED', 'RETURNED'].includes(o.status));
+          return {
+            id: c.id,
+            name: c.name,
+            phone: c.phone,
+            email: c.email,
+            city: c.addresses[0]?.city ?? null,
+            orderCount: c.orders.length,
+            spentPaisa: kept.reduce((s, o) => s + o.totalPaisa, 0),
+            lastOrder: c.orders[0] ?? null,
+          };
+        }),
+        total,
+        page,
+        pageSize,
+      });
+    }),
+  );
+
   // ─── Dashboard ───
   r.get(
     '/dashboard',

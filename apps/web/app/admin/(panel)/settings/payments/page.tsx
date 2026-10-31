@@ -1,8 +1,9 @@
-import { CreditCard } from 'lucide-react';
-import { Upcoming } from '@/components/admin/upcoming';
+import { getStaffUser } from '@/lib/staff-session';
+import { PaymentsSettings } from './payments-settings';
 
 export const metadata = { title: 'Payments & advance' };
 
-export default function Page() {
-  return <Upcoming title="Payments & advance" description="Advance payment rules and the accounts customers pay into." icon={CreditCard} phase="Phase 5 (settings)" />;
+export default async function Page() {
+  const user = await getStaffUser();
+  return <PaymentsSettings canEdit={user?.role === 'owner' || user?.role === 'manager'} />;
 }

@@ -144,14 +144,14 @@ export function LoginForm() {
       <div className={cn(ENTER, 'w-full max-w-sm rounded-lg border bg-card shadow-[6px_6px_0_0_var(--border)]')}>
         <div className="flex flex-col items-center gap-3 border-b px-6 pb-6 pt-8 text-center sm:px-8">
           <span className="flex size-11 items-center justify-center rounded-md bg-primary font-serif text-base font-bold text-primary-foreground">
-            CJ
+            CO
           </span>
           <div>
             <h1 className="font-serif text-2xl font-bold text-primary">
               {step === 'password' ? 'Staff sign in' : 'Two-step verification'}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {step === 'password' ? 'Customized Jewellers store admin' : 'Enter the code from your authenticator app.'}
+              {step === 'password' ? 'Cultural Obsession store admin' : 'Enter the code from your authenticator app.'}
             </p>
           </div>
         </div>
