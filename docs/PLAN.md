@@ -72,13 +72,6 @@ packages/shared  Zod schemas, types, money helpers (used everywhere)
 5. Idempotency keys + checkout rate limiting / abuse protection
 6. Order confirmation page and track-order page (order number + phone)
 
-### Phase 4 — Personalization engine
-1. Field types: engraving text, font, colour, size, gift message (template config)
-2. 2D SVG/canvas preview inside the existing product form styling
-3. Arabic/Urdu shaping fonts for calligraphy products (license checked)
-4. Server validation of lengths, characters and extra prices
-5. Save selections, preview and artwork references on order items
-
 ### Phase 5 — Admin operations & WhatsApp
 1. Order inbox: filters, status changes, history, internal notes
 2. Personalization approval step before production
@@ -101,3 +94,13 @@ packages/shared  Zod schemas, types, money helpers (used everywhere)
 2. JazzCash / Easypaisa / Safepay online payments
 3. WhatsApp Cloud API order confirmation messages
 4. Coupons, reviews, abandoned checkout recovery, delivered-revenue reporting
+
+### Phase 4 — Personalization engine (deferred — last)
+Deferred by the owner on 2026-10-31: built after every other phase. Until then products keep the
+theme's "Customize Name" field, validated server-side and saved on each order line.
+
+1. Field types: engraving text, font, colour, size, gift message (template config)
+2. 2D SVG/canvas preview inside the existing product form styling
+3. Arabic/Urdu shaping fonts for calligraphy products (license checked)
+4. Server validation of lengths, characters and extra prices
+5. Save selections, preview and artwork references on order items
