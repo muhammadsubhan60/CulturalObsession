@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import type { Auth } from './auth/auth';
 import { catalogRouter } from './catalog/routes';
 import { checkoutRouter } from './checkout/routes';
+import { ordersRouter } from './orders/routes';
+import { settingsRouter } from './settings/routes';
 import type { Storage } from './storage/s3';
 import { storeFormsRouter } from './store/forms';
 import { storeRouter } from './store/routes';
@@ -41,6 +43,8 @@ export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient; st
   app.use('/api/store', checkoutRouter({ prisma: deps.prisma, storage: deps.storage, internalToken: env.INTERNAL_API_TOKEN }));
   app.use('/api/admin', catalogRouter(deps));
   app.use('/api/admin', uploadRouter(deps));
+  app.use('/api/admin', ordersRouter(deps));
+  app.use('/api/admin', settingsRouter(deps));
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Not found' });

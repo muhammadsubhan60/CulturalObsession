@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from '@co/db';
+import type { PrismaClient } from '@co/db';
 import { checkoutInput, quoteInput, trackInput } from '@co/shared';
 import { Router, type Request } from 'express';
 import { rateLimit } from 'express-rate-limit';
@@ -7,11 +7,10 @@ import { z } from 'zod';
 import { handle, HttpError, log, notFound } from '../http/errors';
 import type { Storage } from '../storage/s3';
 import { shopperIp } from '../store/forms';
+import { orderView, OutOfStock, placeOrder, type OrderRow } from './place-order';
 import { quoteCart, type Quote } from './quote';
 
 type Deps = { prisma: PrismaClient; storage: Storage | null; internalToken?: string };
-
-class OutOfStock extends Error {}
 
 function limiter(windowMs: number, limit: number, internalToken: string | undefined, message: string) {
   return rateLimit({
@@ -41,15 +40,6 @@ const publicQuote = (q: Quote) => ({
   codAmountPaisa: q.codAmountPaisa,
   ok: q.ok,
 });
-
-const orderView = {
-  items: { include: { customization: true } },
-  payments: { include: { paymentAccount: true } },
-  shipments: { include: { courier: true } },
-  statusHistory: { orderBy: { createdAt: 'asc' } },
-} satisfies Prisma.OrderInclude;
-
-type OrderRow = Prisma.OrderGetPayload<{ include: typeof orderView }>;
 
 /** What a customer may see about their own order. No internal notes, no staff ids. */
 function customerOrder(o: OrderRow) {
@@ -139,112 +129,7 @@ export function checkoutRouter({ prisma, storage, internalToken }: Deps) {
 
       try {
         const order = await prisma.$transaction(
-          async (tx) => {
-            const quote = await quoteCart(tx, input.lines, storage);
-            if (!quote.ok) {
-              throw new HttpError(409, 'Some items in your cart changed', quote.lines.filter((l) => l.problem).map((l) => ({ path: `lines.${l.index}`, message: l.problemDetail ?? l.problem! })));
-            }
-
-            // Advance payment: required amount comes from the rules, never from the request.
-            let paymentAccountId: string | null = null;
-            if (quote.advanceRequiredPaisa > 0) {
-              if (input.payment.method === 'COD') throw new HttpError(400, 'Invalid input', [{ path: 'payment.method', message: 'This order needs an advance payment' }]);
-              const account = input.payment.accountId
-                ? await tx.paymentAccount.findFirst({ where: { id: input.payment.accountId, method: input.payment.method, isActive: true } })
-                : null;
-              if (!account) throw new HttpError(400, 'Invalid input', [{ path: 'payment.accountId', message: 'Choose where you will send the advance' }]);
-              paymentAccountId = account.id;
-            } else if (input.payment.method !== 'COD') {
-              throw new HttpError(400, 'Invalid input', [{ path: 'payment.method', message: 'This order is cash on delivery' }]);
-            }
-
-            // Reserve stock atomically; the CHECK constraint also guards reserved <= on hand.
-            for (const line of quote.lines.filter((l) => l.trackInventory)) {
-              const updated = await tx.$executeRaw`
-                UPDATE "Inventory" SET "quantityReserved" = "quantityReserved" + ${line.quantity}, "updatedAt" = now()
-                WHERE "variantId" = ${line.variantId} AND "quantityOnHand" - "quantityReserved" >= ${line.quantity}`;
-              if (updated !== 1) throw new OutOfStock(line.productTitle);
-            }
-
-            const customer = await tx.customer.upsert({
-              where: { phone: input.customer.phone },
-              create: { name: input.customer.name, phone: input.customer.phone, email: input.customer.email ?? null },
-              update: { name: input.customer.name, ...(input.customer.email ? { email: input.customer.email } : {}) },
-            });
-            await tx.address.create({
-              data: { customerId: customer.id, recipientName: input.customer.name, phone: input.customer.phone, ...input.address },
-            });
-
-            const [seq] = await tx.$queryRaw<{ n: bigint }[]>`SELECT nextval('order_number_seq') AS n`;
-            const n = seq!.n;
-            const status = quote.advanceRequiredPaisa > 0 ? 'CONFIRMATION_REQUIRED' : 'PENDING';
-            const created = await tx.order.create({
-              data: {
-                orderNumber: `CO-${n}`,
-                idempotencyKey: input.idempotencyKey,
-                customerId: customer.id,
-                source: 'WEBSITE',
-                status,
-                paymentMethod: input.payment.method,
-                subtotalPaisa: quote.subtotalPaisa,
-                shippingPaisa: quote.shippingPaisa,
-                totalPaisa: quote.totalPaisa,
-                advanceRequiredPaisa: quote.advanceRequiredPaisa,
-                advanceRuleSnapshot: quote.advanceRequiredPaisa > 0 ? (quote.advance.lines as object) : undefined,
-                codAmountPaisa: quote.codAmountPaisa,
-                recipientName: input.customer.name,
-                recipientPhone: input.customer.phone,
-                shippingAddress: input.address,
-                customerNote: input.note ?? null,
-                ...input.attribution,
-                items: {
-                  create: quote.lines.map((l) => ({
-                    variantId: l.variantId,
-                    productTitleSnapshot: l.productTitle,
-                    variantTitleSnapshot: l.variantTitle,
-                    skuSnapshot: l.sku,
-                    productTypeSnapshot: l.productType,
-                    unitPricePaisa: l.unitPricePaisa,
-                    customizationPaisa: l.customizationPaisa,
-                    quantity: l.quantity,
-                    lineTotalPaisa: l.lineTotalPaisa,
-                    inventoryReserved: l.trackInventory,
-                    customization: {
-                      create: l.customization.map((c) => ({ fieldKey: c.key, labelSnapshot: c.label, value: c.value, extraPricePaisa: c.extraPricePaisa })),
-                    },
-                  })),
-                },
-                payments: {
-                  create: [
-                    ...(quote.advanceRequiredPaisa > 0
-                      ? [
-                          {
-                            method: input.payment.method,
-                            purpose: 'ADVANCE' as const,
-                            status: input.payment.reference ? ('AWAITING_VERIFICATION' as const) : ('PENDING' as const),
-                            amountPaisa: quote.advanceRequiredPaisa,
-                            paymentAccountId,
-                            providerReference: input.payment.reference ?? null,
-                          },
-                        ]
-                      : []),
-                    ...(quote.codAmountPaisa > 0
-                      ? [{ method: 'COD' as const, purpose: quote.advanceRequiredPaisa > 0 ? ('BALANCE' as const) : ('FULL' as const), status: 'PENDING' as const, amountPaisa: quote.codAmountPaisa }]
-                      : []),
-                  ],
-                },
-                statusHistory: { create: { toStatus: status, note: 'Order placed on the website' } },
-              },
-              include: orderView,
-            });
-
-            for (const l of quote.lines.filter((x) => x.trackInventory)) {
-              await tx.inventoryMovement.create({
-                data: { variantId: l.variantId, quantityDelta: l.quantity, reason: 'ORDER_RESERVED', referenceType: 'Order', referenceId: created.id },
-              });
-            }
-            return created;
-          },
+          (tx) => placeOrder(tx, storage, { ...input, source: 'WEBSITE' }),
           { isolationLevel: 'ReadCommitted', timeout: 15_000 },
         );
         log('info', req, 'order placed', { orderNumber: order.orderNumber, totalPaisa: order.totalPaisa });

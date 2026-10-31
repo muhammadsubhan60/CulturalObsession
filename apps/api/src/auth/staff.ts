@@ -3,7 +3,7 @@ import type { StaffRole } from './roles';
 
 /**
  * Creates a staff login directly through Better Auth's internal adapter (public sign-up is disabled).
- * Used by the seed script and tests; the admin UI uses the admin plugin's createUser endpoint.
+ * Used by the seed script, tests and the owner-only staff screen (POST /api/admin/staff).
  */
 export async function createStaffUser(
   auth: Auth,
