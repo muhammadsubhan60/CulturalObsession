@@ -1,0 +1,16 @@
+{
+  "name": "@co/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@co/db": "workspace:*",
+    "@playwright/test": "1.56.1",
+    "@types/node": "^26.6.6",
+    "typescript": "~6.0.0"
+  }
+}

@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - e2e
 
 overrides:
   # Transitive via prisma → @prisma/studio-core; patched for GHSA-xxjr-mmjv-4gpg and related.
