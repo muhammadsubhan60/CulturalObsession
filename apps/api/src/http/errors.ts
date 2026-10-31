@@ -1,5 +1,6 @@
 import type { ErrorRequestHandler, NextFunction, Request, RequestHandler, Response } from 'express';
 import { ZodError } from 'zod';
+import { captureError } from '../observability/sentry';
 
 export class HttpError extends Error {
   constructor(
@@ -54,6 +55,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     return;
   }
   log('error', req, err instanceof Error ? err.message : String(err));
+  captureError(err, { method: req.method, path: req.path });
   res.status(500).json({ error: 'Something went wrong' });
 };
 

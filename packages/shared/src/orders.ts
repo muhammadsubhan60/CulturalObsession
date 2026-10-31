@@ -97,7 +97,7 @@ export const shipmentPatch = z.object({
 });
 
 /** Orders staff enter for customers who ordered on WhatsApp, Instagram or by phone. */
-export const adminOrderInput = checkoutInput.omit({ attribution: true }).extend({
+export const adminOrderInput = checkoutInput.omit({ attribution: true, tracking: true }).extend({
   source: z.enum(['WHATSAPP', 'ADMIN']),
   /** The advance was already received (e.g. screenshot on WhatsApp) — record it as paid. */
   advanceReceived: z.boolean().default(false),

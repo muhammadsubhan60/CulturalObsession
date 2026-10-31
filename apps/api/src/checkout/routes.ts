@@ -5,12 +5,20 @@ import { rateLimit } from 'express-rate-limit';
 import { timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { handle, HttpError, log, notFound } from '../http/errors';
+import type { Env } from '../env';
+import { purchaseEvent, sendMetaEvents } from '../marketing/meta-capi';
 import type { Storage } from '../storage/s3';
 import { shopperIp } from '../store/forms';
 import { orderView, OutOfStock, placeOrder, type OrderRow } from './place-order';
 import { quoteCart, type Quote } from './quote';
 
-type Deps = { prisma: PrismaClient; storage: Storage | null; internalToken?: string };
+type Deps = {
+  prisma: PrismaClient;
+  storage: Storage | null;
+  internalToken?: string;
+  meta?: Pick<Env, 'META_PIXEL_ID' | 'META_CAPI_TOKEN' | 'META_TEST_EVENT_CODE'>;
+  webOrigin?: string;
+};
 
 function limiter(windowMs: number, limit: number, internalToken: string | undefined, message: string) {
   return rateLimit({
@@ -91,7 +99,7 @@ function customerOrder(o: OrderRow) {
   };
 }
 
-export function checkoutRouter({ prisma, storage, internalToken }: Deps) {
+export function checkoutRouter({ prisma, storage, internalToken, meta, webOrigin }: Deps) {
   const r = Router();
 
   r.post(
@@ -133,6 +141,31 @@ export function checkoutRouter({ prisma, storage, internalToken }: Deps) {
           { isolationLevel: 'ReadCommitted', timeout: 15_000 },
         );
         log('info', req, 'order placed', { orderNumber: order.orderNumber, totalPaisa: order.totalPaisa });
+        if (meta) {
+          // Fire and forget: a slow or failing Meta call never delays or fails the order.
+          void sendMetaEvents(meta, [
+            purchaseEvent(
+              {
+                orderNumber: order.orderNumber,
+                createdAt: order.createdAt,
+                totalPaisa: order.totalPaisa,
+                customerId: order.customerId,
+                phone: order.recipientPhone,
+                email: input.customer.email ?? null,
+                name: input.customer.name,
+                city: input.address.city,
+                items: order.items.map((i) => ({ sku: i.skuSnapshot, quantity: i.quantity, unitPricePaisa: i.unitPricePaisa + i.customizationPaisa })),
+              },
+              {
+                ip: shopperIp(req, internalToken),
+                userAgent: req.get('user-agent') ?? null,
+                fbp: input.tracking?.fbp,
+                fbc: input.tracking?.fbc,
+                sourceUrl: webOrigin ? `${webOrigin}/checkout` : undefined,
+              },
+            ),
+          ]).catch((e: Error) => log('warn', req, 'meta capi failed', { orderNumber: order.orderNumber, error: e.message }));
+        }
         res.status(201).json({ order: customerOrder(order), replayed: false });
       } catch (err) {
         if (err instanceof OutOfStock) throw new HttpError(409, `${err.message} just sold out`);

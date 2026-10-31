@@ -32,6 +32,11 @@ function idempotencyKey(): string {
   }
 }
 
+function cookie(name: string): string | undefined {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]!) : undefined;
+}
+
 function attribution(): Record<string, string> {
   try {
     return JSON.parse(window.sessionStorage.getItem('co.attribution') ?? '{}');
@@ -121,7 +126,22 @@ export function CheckoutPage() {
         note: form.note,
         payment: needsAdvance ? { method: account?.method ?? 'BANK_TRANSFER', accountId, reference: form.reference } : { method: 'COD' },
         attribution: attribution(),
+        tracking: { fbp: cookie('_fbp'), fbc: cookie('_fbc') },
       });
+      try {
+        // Read by /storefront/analytics.js on the order page to send the browser Purchase event once.
+        window.sessionStorage.setItem(
+          'co.purchase',
+          JSON.stringify({
+            orderNumber: placed.order.orderNumber,
+            value: quote.totalPaisa / 100,
+            ids: quote.lines.map((l) => l.sku),
+            quantity: quote.lines.reduce((s, l) => s + l.quantity, 0),
+          }),
+        );
+      } catch {
+        // storage unavailable: the server-side Purchase event still records it
+      }
       clearCart();
       try {
         window.sessionStorage.removeItem('co.checkout.key');

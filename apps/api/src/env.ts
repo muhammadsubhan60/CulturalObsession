@@ -27,6 +27,14 @@ const schema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
   /** Public base URL that serves the bucket (CDN or R2 custom domain). */
   MEDIA_PUBLIC_URL: z.url().optional(),
+  // ─── Observability and marketing (all optional; each feature is off until set) ───
+  SENTRY_DSN: z.url().optional(),
+  /** Meta (Facebook) Pixel id, also used for the server-side Conversions API. */
+  META_PIXEL_ID: z.string().regex(/^\d{10,20}$/).optional(),
+  /** Conversions API access token from Events Manager. Purchase events are sent only when set. */
+  META_CAPI_TOKEN: z.string().min(20).optional(),
+  /** Events Manager "Test events" code, to check CAPI before going live. */
+  META_TEST_EVENT_CODE: z.string().max(40).optional(),
 });
 
 export type Env = z.infer<typeof schema>;

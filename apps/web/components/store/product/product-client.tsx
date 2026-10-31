@@ -152,6 +152,7 @@ export function ProductForm({ children }: { children: React.ReactNode }) {
       if (v) customization[f.key] = v;
     }
     addToCart({ variantId: variant.id, productSlug: product.slug, quantity, customization });
+    document.dispatchEvent(new CustomEvent('co:add-to-cart', { detail: { value: (variant.pricePaisa * quantity) / 100, ids: [product.slug], quantity } }));
     router.push('/cart');
   }
 

@@ -29,8 +29,14 @@ export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient; st
 
   app.use(express.json({ limit: '100kb' }));
 
-  app.get('/health', (_req, res) => {
-    res.json({ status: 'ok' });
+  // Railway's health check and uptime monitors: 503 when the database is unreachable.
+  app.get('/health', async (_req, res) => {
+    try {
+      await deps.prisma.$queryRaw`SELECT 1`;
+      res.json({ status: 'ok' });
+    } catch {
+      res.status(503).json({ status: 'degraded' });
+    }
   });
 
   app.get('/api/admin/me', requireStaff(deps.auth), (_req, res) => {
@@ -40,7 +46,7 @@ export function createApp(env: Env, deps: { auth: Auth; prisma: PrismaClient; st
 
   app.use('/api/store', storeRouter(deps));
   app.use('/api/store', storeFormsRouter({ prisma: deps.prisma, internalToken: env.INTERNAL_API_TOKEN }));
-  app.use('/api/store', checkoutRouter({ prisma: deps.prisma, storage: deps.storage, internalToken: env.INTERNAL_API_TOKEN }));
+  app.use('/api/store', checkoutRouter({ prisma: deps.prisma, storage: deps.storage, internalToken: env.INTERNAL_API_TOKEN, meta: env, webOrigin: env.WEB_ORIGIN }));
   app.use('/api/admin', catalogRouter(deps));
   app.use('/api/admin', uploadRouter(deps));
   app.use('/api/admin', ordersRouter(deps));

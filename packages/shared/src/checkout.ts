@@ -68,6 +68,8 @@ export const checkoutInput = z.object({
     })
     .optional()
     .transform((v) => v ?? {}),
+  /** Meta browser ids (_fbp / _fbc cookies), so the server-side Purchase matches the pixel's. */
+  tracking: z.object({ fbp: optional(200), fbc: optional(500) }).optional(),
 });
 export type CheckoutInput = z.input<typeof checkoutInput>;
 

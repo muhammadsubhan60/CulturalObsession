@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Analytics } from '@/components/store/analytics';
 import { ThemeScripts } from '@/components/store/theme-scripts';
 
 export const metadata: Metadata = {
@@ -7,6 +8,8 @@ export const metadata: Metadata = {
   title: { default: 'Cultural Obsession', template: '%s – Cultural Obsession' },
   openGraph: { siteName: 'Cultural Obsession', type: 'website' },
   icons: { icon: '/storefront/favicon.png' },
+  // Search Console ownership check, from GOOGLE_SITE_VERIFICATION.
+  ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
 };
 
 /**
@@ -28,6 +31,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
         </a>
         {children}
         <ThemeScripts />
+        <Analytics />
       </body>
     </html>
   );
